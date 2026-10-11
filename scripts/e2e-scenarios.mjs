@@ -20,6 +20,40 @@ export const SCENARIOS = {
     await calibrateFlow(ctx);
   },
 
+  /** Blok 6: Bridge Sprint volledig spelen (gebruik E2E_QUERY=?snel=1 voor de korte versie). */
+  async bridge(ctx) {
+    const { page, clickText, sleep, check, OUT } = ctx;
+    await clickText(page, 'Spelen');
+    await calibrateFlow({ ...ctx, skipDebug: true });
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 8000 });
+    await clickText(page, 'Bridge Sprint');
+    await sleep(1500);
+    await page.screenshot({ path: path.join(OUT, 'bridge-1-intro.png') });
+    await page.waitForFunction(() => document.querySelector('.hud-instruction')?.textContent?.includes('SPRINT'), { timeout: 15000 });
+    await sleep(1500);
+    await page.screenshot({ path: path.join(OUT, 'bridge-2-sprint.png') });
+    const rest = await page
+      .waitForFunction(() => document.querySelector('.hud-instruction')?.textContent?.includes('Rust'), { timeout: 20000 })
+      .then(() => true)
+      .catch(() => false);
+    check(rest, 'na de sprint volgt een rustfase');
+    await sleep(1000);
+    await page.screenshot({ path: path.join(OUT, 'bridge-3-rust.png') });
+    await page.setViewport({ width: 600, height: 900 });
+    await sleep(1200);
+    await page.screenshot({ path: path.join(OUT, 'bridge-4-staand.png') });
+    await page.setViewport({ width: 1280, height: 800 });
+    const done = await page
+      .waitForFunction(() => !!document.querySelector('.result'), { timeout: 90000 })
+      .then(() => true)
+      .catch(() => false);
+    check(done, 'de etappe eindigt met een resultaatscherm');
+    await sleep(1500);
+    await page.screenshot({ path: path.join(OUT, 'bridge-5-resultaat.png') });
+    const stars = await page.evaluate(() => document.querySelectorAll('.star.on').length);
+    check(stars >= 1, `minstens 1 ster (${stars})`);
+  },
+
   /** Blok 5: stijlvoorbeeld (screenshots om te beoordelen). */
   async stijl({ page, clickText, sleep, OUT }) {
     await clickText(page, 'Stijl');

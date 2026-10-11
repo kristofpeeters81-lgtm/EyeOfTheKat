@@ -36,7 +36,7 @@ const check = (ok, label) => {
 };
 
 const server = await preview({ preview: { port: 4337, strictPort: true } });
-const url = 'http://localhost:4337/';
+const url = `http://localhost:4337/${process.env.E2E_QUERY ?? ''}`;
 const args = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required', '--window-size=1280,800'];
 if (video) args.push(`--use-file-for-fake-video-capture=${path.resolve(video)}`);
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args });

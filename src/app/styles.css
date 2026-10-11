@@ -182,3 +182,48 @@ button {
 .hold.on { border-color: var(--jade); box-shadow: 0 0 16px rgba(46, 230, 197, 0.35); }
 .small-text { font-size: 0.8rem; }
 .swatch { width: 34px; height: 34px; border-radius: 10px; border: 2px solid #fff; display: inline-block; }
+
+/* Spelscherm (HUD) */
+.stage-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hud { position: absolute; inset: 0; pointer-events: none; padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+.hud button { pointer-events: auto; }
+.hud-top { display: flex; gap: 12px; align-items: flex-start; }
+.hud-title { display: flex; flex-direction: column; min-width: 0; }
+.hud-title small { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hud-title b { font: 900 clamp(16px, 3vw, 26px)/1.1 var(--font-title); text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.hud-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.hud-instruction { font: 800 clamp(18px, 3.6vw, 34px)/1.15 var(--font-title); text-align: center; color: var(--text); text-shadow: 0 3px 14px rgba(0,0,0,0.7); }
+.hud-instruction.big { font-size: clamp(48px, 12vw, 120px); color: var(--eye); }
+.hud-progress { width: min(420px, 60%); height: 8px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden; }
+.hud-progress > div { height: 100%; background: linear-gradient(90deg, var(--jade), var(--eye)); transition: width 0.2s linear; }
+.hud-right { display: flex; flex-direction: column; align-items: flex-end; }
+.hud-right b { font: 700 clamp(14px, 2.4vw, 20px)/1.2 var(--font-title); }
+.hud-timer { font: 900 clamp(26px, 6vw, 54px)/1 var(--font-title); color: var(--eye); text-shadow: 0 3px 14px rgba(0,0,0,0.6); }
+.hud-power { position: absolute; left: max(12px, env(safe-area-inset-left)); top: 50%; transform: translateY(-50%); width: 18px; height: 34vh; border-radius: 999px; background: rgba(255,255,255,0.12); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+.hud-power > div { width: 100%; transition: height 0.15s linear, background 0.2s; }
+.hud-power span { position: absolute; top: -2px; left: 0; right: 0; text-align: center; font-size: 12px; }
+.hud-subtitle { position: absolute; left: 50%; transform: translateX(-50%); bottom: max(64px, calc(env(safe-area-inset-bottom) + 60px)); display: flex; gap: 10px; align-items: center; max-width: min(720px, 92vw); padding: 8px 16px 8px 10px; border-radius: 999px; background: rgba(5, 8, 26, 0.72); border: 1px solid var(--line); }
+.hud-subtitle p { font-weight: 600; font-size: clamp(14px, 2.4vw, 19px); }
+.hud-guide { position: absolute; left: max(12px, env(safe-area-inset-left)); bottom: max(10px, env(safe-area-inset-bottom)); display: flex; gap: 8px; opacity: 0.8; }
+.hud-pause { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5, 8, 26, 0.6); }
+.hud-pause .panel { max-width: 460px; text-align: center; gap: 8px; }
+
+/* Resultaat */
+.result { gap: 14px; text-align: center; }
+.stars { display: flex; gap: 10px; font-size: clamp(48px, 10vw, 86px); line-height: 1; }
+.star { color: rgba(255,255,255,0.15); }
+.star.on { color: var(--eye); text-shadow: 0 0 24px rgba(255, 178, 30, 0.8); animation: star-pop 0.5s ease-out both; }
+@keyframes star-pop { 0% { transform: scale(0.2) rotate(-40deg); opacity: 0; } 70% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
+.result-stats { display: grid; grid-template-columns: repeat(3, minmax(90px, 1fr)); gap: 12px 18px; }
+.result-stats div { display: flex; flex-direction: column; }
+.result-stats b { font: 800 1.3rem/1.2 var(--font-title); color: var(--eye); }
+.result-stats span { font-size: 0.8rem; color: var(--muted); }
+
+/* Etappekeuze (tijdelijk) */
+.stage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.stage-card { text-align: left; display: flex; flex-direction: column; gap: 4px; }
+.stage-card b { font: 800 1.1rem/1.2 var(--font-title); color: var(--eye); }
+.stage-card small { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.7rem; }
+.stage-card span { font-size: 0.9rem; }
+.stage-card em { color: var(--muted); font-size: 0.8rem; }
+.stage-card:disabled { opacity: 0.5; cursor: default; }

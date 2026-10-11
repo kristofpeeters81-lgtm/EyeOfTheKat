@@ -330,3 +330,51 @@ zonder camera.
 **Les voor B-world:** de held en de wereld zijn puur Canvas2D zonder afbeeldingen. Een andere
 B-world-stijl betekent enkel `drawHero`/`drawMountains` vervangen. Het skelet en de poses
 (acties) blijven bruikbaar.
+
+## Blok 6 — Etappemotor + Bridge Sprint  (2026-10-11 → wacht op test door Kristof)
+
+**Doel:** het gemeenschappelijke verloop van elke etappe, en de eerste etappe end-to-end.
+
+**Gebouwd:**
+- **Etappemotor** (`src/game/stageBase.ts`): intro (4 s uitleg door de Geest) → aftellen 3-2-1 →
+  actief ⇄ rust → klaar. De spelklok stopt bij uit beeld / tweede persoon / veranderd beeld
+  (#26), met een pauzescherm en een zin van de Geest. Er worden meetgegevens bijgehouden
+  (actieve tijd, tijd in hoog/piek, gemiddelde/piek-Power, pauzes) en per opdracht hoe ze gehaald
+  is: `detected` / `auto` / `manual` (#31).
+- **Leeftijdsschaling en sterren** (`src/game/scaling.ts`, #43/#45): factor 0,6 → 1,0 (6 → 12 jaar),
+  aantallen volledig geschaald, tempo half. Sterren zoals in #45, met een uitzondering voor
+  vasthouden (Shadow Wall: geen intensiteitseis).
+- **Bridge Sprint** (`src/game/stages/bridgeSprint.ts`): 4 sprints van 15 s (min. 10 s, tempo
+  geschaald), met 20 s actieve rust ertussen. De snelheid van de held volgt de benen-power
+  (1,5 → 9 m/s, vol bij 70). De brug stort achter de held in aan 5,8 m/s × tempofactor. Haalt
+  ze hem in, dan struikelt hij en wordt ze 3 m teruggezet: nooit vallen. Per seconde sprint wordt
+  genoteerd of er echt gelopen werd (benen-power ≥ 30). Sterren op basis van tijd in hoog/piek.
+- **Spelscherm** (`src/app/StageScreen.tsx`): canvas met de wereld en de etappe, een HUD
+  (naam, opdracht, voortgang, teller, aftelklok, Power-balk), ondertitels van de Geest, een
+  pauzescherm, begeleider-knoppen "✓ Gehaald" (#31) en "■ Stop", en daarna het
+  **resultaatscherm** (sterren met animatie, punten, actieve tijd, % hoog/piek, gemiddelde Power,
+  "gezien door de camera" x/y, vanzelf/begeleider).
+- **Tekening van de brug** (`src/render/stages/bridge.ts`): kloof met mist, planken die achter de
+  instorting naar beneden tuimelen en vervagen, leuning met staanders, stof aan de rand en een
+  rode gloed als de instorting dichtbij komt. Tijdens de rust: vaste rots.
+- Tijdelijke **etappekeuze** met leeftijdskeuze en "korte etappes (test)" (tot blok 10). `?snel=1`
+  in de link maakt alles 4× korter (voor tests).
+
+**Bestanden:** `src/game/{types,scaling,stageBase,catalog,testing}.ts`,
+`src/game/stages/bridgeSprint.ts` (+ test), `src/render/stages/{layout,bridge,index}.ts`,
+`src/app/{StageScreen,ResultScreen,StagePicker}.tsx`.
+
+**Getest:**
+- 6 unit tests: leeftijdsfactor en sterren; het volledige verloop met 4 sprints (3 sterren bij
+  volle inzet); wie niet loopt, struikelt maar eindigt met 1 ster; de klok stopt uit beeld
+  (+ zin van de Geest + pauzeteller); kortere sprints voor 6-jarigen.
+- E2E-scenario `bridge` (headless Chrome, synthetisch filmpje, `?snel=1`): kalibreren → etappe →
+  sprint → rust → resultaat met ≥ 1 ster, plus screenshots liggend/staand. Omdat het filmpje in
+  een lus speelt, loopt de figuur tussendoor uit beeld, en dan pauzeert het spel zoals bedoeld.
+- **Op het toestel: nog niet getest.** Kristof: speel Bridge Sprint volledig. Voelt de snelheid
+  van de held "eerlijk" bij hard lopen? Lukt het om de instorting voor te blijven? Zijn de
+  sprints niet te lang of te kort?
+
+**Les voor B-world:** een etappe is een klasse met `update(input) → events`, `hud()`, `hero()` en
+`result()`. Het scherm is een dunne laag. Nieuwe etappes erven van `StageBase` en schrijven enkel
+`step()`.

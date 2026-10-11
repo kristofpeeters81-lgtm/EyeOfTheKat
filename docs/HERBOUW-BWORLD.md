@@ -83,8 +83,18 @@ moveTracker.update(visionResult, markersInSilhouetteCoords);  // slagen/reiken v
 ```
 Camera in de bandjes-modus op 320 px lange zijde; de silhouetmotor halveert zelf.
 
-## 4. Etappes en spellogica
-*(Game-blokken)*
+## 4. Etappes en spellogica *(vanaf blok 6)*
+**Letterlijk overnemen:** `src/game/` (geen DOM/React): `stageBase.ts` (verloop, pauze, meetgegevens),
+`scaling.ts` (leeftijd, sterren), `catalog.ts`, `stages/*.ts` + tests (`testing.ts` = nep-invoer).
+```ts
+const stage = createStage('bridge-sprint', { age: 9 });
+const events = stage.update(gameInput);   // per camerabeeld; events: say / sfx / phase / done
+stage.hud(); stage.hero(); stage.result();
+stage.manualPass();                       // begeleider-knop (#31)
+```
+`GameInput` = VisionResult + MoveTracker-uitvoer (zie `src/app/StageScreen.tsx`).
+**Opnieuw bouwen in B-world-stijl:** `src/app/StageScreen.tsx` (HUD) en `ResultScreen.tsx`.
+**Tekeningen:** `src/render/stages/*.ts` (per etappe), te vervangen of over te nemen.
 
 ## 5. Held en wereld (visuals, animaties) *(blok 5, ingevuld)*
 **Logica overnemen, visuals naar keuze:** `src/render/hero.ts` scheidt het **skelet + poses**
