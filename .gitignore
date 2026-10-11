@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+e2e-output/
+# Eigen opnames blijven lokaal (#32): nooit in de publieke repo
+test-fixtures/lokaal/
+*.y4m

@@ -1,0 +1,15 @@
+{
+  "name": "The Eye of the Kat",
+  "short_name": "Eye of the Kat",
+  "description": "Ninja-parcours met je lichaam als controller, zonder AI",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0b1026",
+  "theme_color": "#0b1026",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

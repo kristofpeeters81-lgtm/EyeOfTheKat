@@ -1,0 +1,137 @@
+/* The Eye of the Kat — basisstijl. Kleuren staan centraal als variabelen (#49: stijl blijft
+   voorlopig tot Kristof ze bekeek; aanpassen = enkel hier en in src/render/theme.ts). */
+
+@font-face { font-family: 'Unbounded'; font-weight: 500; font-display: swap; src: url('./fonts/unbounded-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Unbounded'; font-weight: 700; font-display: swap; src: url('./fonts/unbounded-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Unbounded'; font-weight: 900; font-display: swap; src: url('./fonts/unbounded-latin-900-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Outfit'; font-weight: 400; font-display: swap; src: url('./fonts/outfit-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Outfit'; font-weight: 600; font-display: swap; src: url('./fonts/outfit-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Outfit'; font-weight: 800; font-display: swap; src: url('./fonts/outfit-latin-800-normal.woff2') format('woff2'); }
+
+:root {
+  --night: #0b1026;
+  --night-2: #141b3d;
+  --panel: rgba(20, 27, 61, 0.86);
+  --line: rgba(255, 255, 255, 0.14);
+  --text: #f4f1ea;
+  --muted: #a9b0d6;
+  --eye: #ffb21e;       /* het Oog van de Kat (amber) */
+  --eye-hot: #ff7a1a;
+  --jade: #2ee6c5;      /* accent: goed, actie */
+  --danger: #ff4d6d;    /* fout, gevaar */
+  --spirit: #9be7ff;    /* de Geest van de Berg */
+  --radius: 18px;
+  --font-title: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: radial-gradient(120% 90% at 50% 0%, #1b2459 0%, var(--night) 60%) fixed, var(--night);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  user-select: none;
+}
+
+h1, h2, h3 { font-family: var(--font-title); margin: 0; letter-spacing: 0.01em; }
+p { margin: 0; line-height: 1.4; }
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 52px;
+  padding: 0 1.4em;
+  border-radius: 999px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, var(--eye) 0%, var(--eye-hot) 100%);
+  color: #1a0f00;
+  box-shadow: 0 6px 0 #a3420a, 0 10px 24px rgba(255, 140, 30, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #a3420a, 0 4px 12px rgba(255, 140, 30, 0.3); }
+.btn.secondary {
+  background: var(--night-2);
+  color: var(--text);
+  border: 2px solid var(--line);
+  box-shadow: 0 5px 0 #05081a;
+}
+.btn.small { min-height: 40px; font-size: 0.75rem; padding: 0 1em; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overflow: auto;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.muted { color: var(--muted); }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: 12px; }
+.grow { flex: 1; }
+.center { display: flex; align-items: center; justify-content: center; }
+.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+/* Debugbalkje (#39) */
+.debugbar {
+  position: fixed;
+  right: max(8px, env(safe-area-inset-right));
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(5, 8, 26, 0.78);
+  border: 1px solid var(--line);
+  font: 600 13px/1 ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  color: var(--muted);
+}
+.debugbar b { color: var(--text); font-weight: 700; }
+.debugbar .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+.debugpanel {
+  position: fixed;
+  right: max(8px, env(safe-area-inset-right));
+  bottom: calc(max(8px, env(safe-area-inset-bottom)) + 44px);
+  z-index: 50;
+  width: min(360px, calc(100vw - 16px));
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+  font: 500 13px/1.45 ui-monospace, 'Cascadia Mono', Menlo, monospace;
+}
+.debugpanel canvas { width: 100%; border-radius: 10px; background: var(--night); display: block; }
+.debugpanel table { width: 100%; border-collapse: collapse; }
+.debugpanel td { padding: 2px 0; }
+.debugpanel td:last-child { text-align: right; color: var(--text); }
+.debugpanel .btn { margin-top: 6px; }

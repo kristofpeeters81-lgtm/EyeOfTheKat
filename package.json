@@ -1,0 +1,30 @@
+{
+  "name": "eye-of-the-kat",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "check:privacy": "node scripts/check-privacy.mjs",
+    "build": "node scripts/check-privacy.mjs && tsc --noEmit && vite build && node scripts/check-privacy.mjs --dist",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/check-privacy.mjs && vitest run",
+    "e2e": "node scripts/e2e.mjs",
+    "testvideo": "node scripts/make-test-video.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "puppeteer-core": "^25.13.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
+  }
+}
