@@ -42,6 +42,8 @@ export interface PersonSpec {
   kneeLift?: [number, number];
   shirt?: Rgb;
   pants?: Rgb;
+  /** Kleurbandje om beide polsen (#33), getekend als vierkantje op de hand. */
+  bands?: Rgb;
   skin?: Rgb;
 }
 
@@ -112,8 +114,14 @@ export function personColor(p: PersonSpec, x: number, y: number): Rgb | null {
       if (Math.abs(x - lx) <= legW / 2) return pants;
     }
   }
-  // Armen
+  // Armen (en kleurbandjes op de handen)
   const armW = H * 0.06;
+  if (p.bands) {
+    for (const side of [-1, 1] as const) {
+      const hand = handPosition(p, side);
+      if (Math.abs(x - hand.x) <= armW * 0.9 && Math.abs(y - hand.y) <= armW * 0.9) return p.bands;
+    }
+  }
   for (const side of [-1, 1] as const) {
     const mode = side < 0 ? (p.leftArm ?? 'down') : (p.rightArm ?? 'down');
     const sx = cx + side * (torsoW / 2 + armW / 2);
@@ -122,6 +130,20 @@ export function personColor(p: PersonSpec, x: number, y: number): Rgb | null {
     if (mode === 'up' && inRect(x, y, sx - armW / 2, shoulderY - H * 0.36, sx + armW / 2, shoulderY + armW)) return shirt;
   }
   return null;
+}
+
+/** Positie van de hand (einde van de arm) voor een kant (-1 = links op het scherm). */
+export function handPosition(p: PersonSpec, side: -1 | 1): { x: number; y: number } {
+  const H = p.height;
+  const h = H * (1 - 0.35 * (p.squat ?? 0));
+  const top = p.footY - (p.lift ?? 0) - h;
+  const shoulderY = top + H * 0.16;
+  const armW = H * 0.06;
+  const sx = p.cx + side * (H * 0.11 + armW / 2);
+  const mode = side < 0 ? (p.leftArm ?? 'down') : (p.rightArm ?? 'down');
+  if (mode === 'out') return { x: sx + side * H * 0.37, y: shoulderY + armW / 2 };
+  if (mode === 'up') return { x: sx, y: shoulderY - H * 0.33 };
+  return { x: sx, y: shoulderY + H * 0.31 };
 }
 
 export function renderScene(spec: SceneSpec): Frame {

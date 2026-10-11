@@ -1,3 +1,4 @@
+import type { Marker } from './color';
 import type { VisionResult } from './engine';
 import { countInRect } from './motion';
 import { coverage } from './silhouette';
@@ -141,7 +142,12 @@ export class MoveTracker {
     };
   }
 
-  update(r: VisionResult): MoveEvent[] {
+  /**
+   * @param markers kleurbandjes-modus (#40): posities van de handen in silhouet-coördinaten. Dan
+   *   tellen slagen en reiken enkel als een hand echt in het doelvlak is (preciezer). `null` of
+   *   weglaten = silhouetmodus.
+   */
+  update(r: VisionResult, markers: Marker[] | null = null): MoveEvent[] {
     const events: MoveEvent[] = [];
     const c = r.calibration;
     const s = r.silhouette;
@@ -213,21 +219,26 @@ export class MoveTracker {
     // Slagzones en reiken: bedekking van doelvlakken rond het huidige lichaam.
     const w = r.width;
     const h = r.height;
+    const inRect = (q: Rect) => (markers ?? []).some((m) => m.x >= q.x0 && m.x < q.x1 && m.y >= q.y0 && m.y < q.y1);
     for (const zone of ['left', 'right', 'up'] as StrikeZone[]) {
-      const cov = coverage(r.personMask, w, h, strikeRect(zone, s.cxLow, c));
-      if (!this.zones[zone] && cov >= T.zoneHit && !this.airborne) {
+      const q = strikeRect(zone, s.cxLow, c);
+      const hit = markers ? inRect(q) : coverage(r.personMask, w, h, q) >= T.zoneHit;
+      const free = markers ? !hit : coverage(r.personMask, w, h, q) < T.zoneRelease;
+      if (!this.zones[zone] && hit && !this.airborne) {
         this.zones[zone] = true;
         events.push({ type: 'strike', t, zone });
-      } else if (this.zones[zone] && cov < T.zoneRelease) {
+      } else if (this.zones[zone] && free) {
         this.zones[zone] = false;
       }
     }
     for (const side of ['left', 'right'] as Side[]) {
-      const cov = coverage(r.personMask, w, h, reachRect(side, s.cxLow, c));
-      if (!this.armUp[side] && cov >= T.zoneHit && !this.airborne && pose.feetRise < 0.04) {
+      const q = reachRect(side, s.cxLow, c);
+      const hit = markers ? inRect(q) : coverage(r.personMask, w, h, q) >= T.zoneHit;
+      const free = markers ? !hit : coverage(r.personMask, w, h, q) < T.zoneRelease;
+      if (!this.armUp[side] && hit && !this.airborne && pose.feetRise < 0.04) {
         this.armUp[side] = true;
         events.push({ type: 'reach', t, side });
-      } else if (this.armUp[side] && cov < T.zoneRelease) {
+      } else if (this.armUp[side] && free) {
         this.armUp[side] = false;
       }
     }

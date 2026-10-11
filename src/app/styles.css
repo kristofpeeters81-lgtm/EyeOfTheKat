@@ -181,3 +181,4 @@ button {
 .hold b { font: 700 1.2rem/1.2 var(--font-title); }
 .hold.on { border-color: var(--jade); box-shadow: 0 0 16px rgba(46, 230, 197, 0.35); }
 .small-text { font-size: 0.8rem; }
+.swatch { width: 34px; height: 34px; border-radius: 10px; border: 2px solid #fff; display: inline-block; }

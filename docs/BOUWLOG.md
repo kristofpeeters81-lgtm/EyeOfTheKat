@@ -232,3 +232,59 @@ verlengd).
 - Games gebruiken enkel `MoveEvent`s en `MoveState`. Ze weten niet hoe een sprong gemeten wordt,
   dus de detectoren kunnen later verbeterd of vervangen worden zonder dat er een game moet
   veranderen.
+
+## Blok 4 — Kleurbandjes  (2026-10-11 → wacht op test door Kristof)
+
+**Doel:** de optionele bandjes-modus (#18, #33, #40): twee fel gekleurde voorwerpen om de polsen,
+gevolgd op kleur, zodat slagen en reiken preciezer worden.
+
+**Gebouwd:**
+- Instelscherm **Kleurbandjes** (vanuit het Testlab, knop "Bandjes uit/aan"). Het kind komt
+  dichterbij en houdt het voorwerp in het vak (kleine camerapreview). Is de kleur ±0,4 s stabiel,
+  dan verschijnen een stalen en de opdracht "Doe het om je polsen en ga terug in de schaduw-ninja
+  staan". De preview toont dan enkel nog de gevonden kleurpixels (magenta) met witte cirkels rond
+  de 2 markers. Vindt de app 2 bandjes zonder storende kleur, dan staat de modus aan. Zit dezelfde
+  kleur ook elders in beeld, dan vraagt de Geest om een ander voorwerp.
+- In het Testlab: knop "Bandjes aan/uit", "Kleur opnieuw", markers als roze bolletjes. In de
+  bandjes-modus tellen slagen en reiken enkel als een **hand** in het doelvlak is.
+
+**Hoe het werkt (src/vision/color.ts):**
+1. **Kleur leren** (`learnColor`): alle pixels in het vak naar HSV. Pixels met verzadiging ≥ 0,35
+   en helderheid ≥ 0,25 tellen als "fel" (minstens 25 % van het vak, anders `not-colorful`).
+   Een histogram van 36 vakjes van 10° levert de piek. Piek + buren moeten ≥ 50 % van de felle
+   pixels zijn (anders `mixed`). Resultaat: gemiddelde tint (circulair), tolerantie ±16°, min.
+   verzadiging = max(0,3; 15e percentiel × 0,75), min. helderheid = max(0,18; 15e percentiel × 0,6).
+2. **Zoeken** (`ColorTracker.find`, op het 320 px-beeld): snelle uitsluiting van te donkere of
+   grijze pixels, dan tint vergelijken. Masker openen (3×3), vlekken zoeken. De 2 grootste vlekken
+   die niet groter zijn dan een polsbandje (`maxMarkerArea`: vierkant van 18 % van de
+   lichaamslengte) zijn de markers. Al de rest is "storende kleur" (`stray`).
+3. **Links/rechts** (`MarkerPairing`): volgt de markers op de dichtstbijzijnde vorige positie.
+   Zonder geschiedenis: positie tegenover het lichaamsmidden. Voor de games maakt een wissel bij
+   kruisende handen niet uit.
+4. **Instelverloop** (`src/runtime/bandFlow.ts`): hold (12 stabiele beelden, tint ±12°) → check
+   (20 goede beelden: in beeld, ruimte ok, 2 markers, storende kleur < 50 % van de markers) →
+   done. Storende kleur ≥ max(30 px, markeroppervlak) gedurende 40 beelden → conflict.
+5. **Runtime:** in de bandjes-modus wordt de camera op 320 px uitgelezen. De silhouetmotor
+   halveert dat zelf naar 160 px, dus de kalibratie blijft geldig.
+
+**Bestanden:** `src/vision/color.ts` (+ test), `src/runtime/bandFlow.ts` (+ test),
+`src/render/bands.ts`, `src/app/BandSetup.tsx`, aanpassingen in `src/vision/moves.ts`
+(markers-parameter), `src/runtime/vision.ts`, `src/app/Testlab.tsx`,
+`src/vision/testing/scene.ts` (bandjes in de synthetische scène).
+
+**Getest:**
+- 9 nieuwe unit tests (45 in totaal): HSV, kleur leren (geel ok, grijs geweigerd), beide handen
+  vinden in 3 armhoudingen, storende kleur bij een trui in dezelfde kleur, links/rechts bij
+  kruisen, slag enkel met de hand echt in het vlak. Het volledige instelverloop: leren → 2 bandjes
+  → aan, en conflict bij een gele trui.
+- E2E Testlab opnieuw groen (geen regressie).
+- **Op het toestel: nog niet getest.** Kristof: probeer 2 felle sokken (geel, roze of groen). Werkt
+  het kleur leren bij gewoon kamerlicht? Ziet de app beide handen op 2,5 m, liggend en staand?
+
+**Problemen en oplossingen:**
+- Een trui in dezelfde kleur als de bandjes smolt samen met de bandjes tot één grote "marker" en
+  gaf zo geen conflictmelding. Oplossing: een maximale bandjesgrootte tegenover de lichaamslengte.
+
+**Les voor B-world:**
+- `color.ts` is los overneembaar. De kleurkeuze gebeurt op het toestel zelf, er is geen vaste kleur.
+- Bandjes zijn een **opt-in** voor precisie. Alle etappes werken zonder (#40).

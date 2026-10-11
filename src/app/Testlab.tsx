@@ -35,12 +35,13 @@ const HOLDS: { key: HoldPose; label: string }[] = [
   { key: 'arms-up', label: 'Armen omhoog' },
 ];
 
-export function Testlab({ onBack, onRecalibrate }: { onBack: () => void; onRecalibrate: () => void }) {
+export function Testlab({ onBack, onRecalibrate, onBands }: { onBack: () => void; onRecalibrate: () => void; onBands: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const countsRef = useRef<MoveCounts>(emptyCounts());
   const stateRef = useRef<MoveState | null>(null);
   const powerRef = useRef({ power: 0, zone: 0, legs: 0, presence: 'ok' as string });
   const [, setTick] = useState(0);
+  const [bands, setBands] = useState(() => getVision().markerMode);
 
   useEffect(() => {
     const vision = getVision();
@@ -48,7 +49,7 @@ export function Testlab({ onBack, onRecalibrate }: { onBack: () => void; onRecal
       countEvents(countsRef.current, moves.events);
       stateRef.current = moves.state;
       powerRef.current = { power: r.power, zone: r.zone, legs: r.legPower, presence: r.presence };
-      if (canvasRef.current) drawLab(canvasRef.current, r, moves.state);
+      if (canvasRef.current) drawLab(canvasRef.current, r, moves.state, moves.markers ?? []);
     });
     void vision.start();
     const id = window.setInterval(() => setTick((t) => t + 1), 125);
@@ -73,6 +74,28 @@ export function Testlab({ onBack, onRecalibrate }: { onBack: () => void; onRecal
         <button className="btn secondary small" onClick={() => (countsRef.current = emptyCounts())}>
           Tellers op 0
         </button>
+        <button
+          className={`btn small${bands ? '' : ' secondary'}`}
+          onClick={() => {
+            const vision = getVision();
+            if (bands) {
+              vision.disableMarkers();
+              setBands(false);
+            } else if (vision.colorModel) {
+              vision.enableMarkers(vision.colorModel);
+              setBands(true);
+            } else {
+              onBands();
+            }
+          }}
+        >
+          Bandjes {bands ? 'aan' : 'uit'}
+        </button>
+        {bands && (
+          <button className="btn secondary small" onClick={onBands}>
+            Kleur opnieuw
+          </button>
+        )}
         <button className="btn secondary small" onClick={onRecalibrate}>
           Kalibreren
         </button>

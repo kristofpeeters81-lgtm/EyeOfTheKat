@@ -72,7 +72,16 @@ Regels en drempels: `docs/BOUWLOG.md` blok 3 (tabel) en `MOVE_THRESHOLDS`. Het T
 (`src/app/Testlab.tsx` + `src/render/lab.ts`) is in B-world handig als verborgen
 begeleidersscherm.
 
-### 3.3 Kleurbandjes *(blok 4)*
+### 3.3 Kleurbandjes *(blok 4, ingevuld)*
+**Letterlijk overnemen:** `src/vision/color.ts`, `src/runtime/bandFlow.ts` (+ tests).
+```ts
+const model = learnColor(bigFrame, boxFor(w, h));       // ColorModel of 'not-colorful' | 'mixed'
+const tracker = new ColorTracker(model);
+tracker.maxArea = maxMarkerArea(bodyHeightOnBigFrame);  // grotere vlekken = storende kleur
+const { markers, stray } = tracker.find(bigFrame);      // ≤ 2 markers, grootste eerst
+moveTracker.update(visionResult, markersInSilhouetteCoords);  // slagen/reiken via de handen
+```
+Camera in de bandjes-modus op 320 px lange zijde; de silhouetmotor halveert zelf.
 
 ## 4. Etappes en spellogica
 *(Game-blokken)*

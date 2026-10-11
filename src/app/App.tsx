@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { BandSetup } from './BandSetup';
 import { Calibrate } from './Calibrate';
 import { CameraCheck } from './CameraCheck';
 import { DebugBar } from './DebugBar';
 import { Testlab } from './Testlab';
 import type { BodyCalibration } from '../vision/types';
 
-type Screen = { name: 'home' } | { name: 'camera' } | { name: 'calibrate'; then: 'home' | 'lab' } | { name: 'lab' };
+type Screen = { name: 'home' } | { name: 'camera' } | { name: 'calibrate'; then: 'home' | 'lab' } | { name: 'lab' } | { name: 'bands' };
 
 export function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
@@ -46,7 +47,10 @@ export function App() {
           }}
         />
       )}
-      {screen.name === 'lab' && <Testlab onBack={home} onRecalibrate={() => setScreen({ name: 'calibrate', then: 'lab' })} />}
+      {screen.name === 'lab' && (
+        <Testlab onBack={home} onRecalibrate={() => setScreen({ name: 'calibrate', then: 'lab' })} onBands={() => setScreen({ name: 'bands' })} />
+      )}
+      {screen.name === 'bands' && <BandSetup onBack={() => setScreen({ name: 'lab' })} onDone={() => setScreen({ name: 'lab' })} />}
       <DebugBar />
     </>
   );
