@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { CameraError } from '../camera/camera';
 import { drawFrame } from '../render/mask';
-import { debugStore } from '../runtime/debug';
-import { getSession } from '../runtime';
-import { MotionMeter } from '../vision/motion';
+import { getVision } from '../runtime/vision';
 
 /**
  * Blok 1: camera starten en meten. Toont een kleine, grofkorrelige preview (het analysebeeld van
- * 160 pixels breed, #10/#46) en zet het bewegingsmasker in het debugpaneel.
+ * 160 pixels breed, #10/#46); het debugpaneel toont het bewegingsmasker.
  */
 
 const ERRORS: Record<string, string> = {
@@ -25,23 +23,20 @@ export function CameraCheck({ onBack }: { onBack: () => void }) {
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    const session = getSession();
-    const motion = new MotionMeter();
+    const vision = getVision();
+    const before = vision.debugMask;
+    vision.debugMask = 'motion';
     let n = 0;
-    session.onFrame((frame) => {
-      const { mask, total } = motion.update(frame);
-      debugStore.setMasks(mask, frame.width, frame.height);
-      debugStore.set({ 'bewegende pixels': total });
+    vision.setListener((_r, frame) => {
       if (previewRef.current && n++ % 2 === 0) drawFrame(previewRef.current, frame);
     });
-    session
-      .start('user')
+    vision
+      .start()
       .then(() => setRunning(true))
       .catch((err: unknown) => setError(err instanceof CameraError ? ERRORS[err.code] : ERRORS.unknown));
     return () => {
-      session.onFrame(null);
-      session.stop();
-      debugStore.clear();
+      vision.setListener(null);
+      vision.debugMask = before;
     };
   }, []);
 

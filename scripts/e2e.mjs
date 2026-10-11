@@ -72,7 +72,8 @@ try {
     const u = new URL(r.url());
     if (u.protocol === 'data:' || u.protocol === 'blob:') return;
     if (!['localhost', '127.0.0.1'].includes(u.hostname)) external.push(r.url());
-    else if (loaded && !u.pathname.endsWith('sw.js')) lateRequests.push(r.url());
+    // Eigen statische bestanden (lettertypes die pas bij gebruik laden) mogen; al de rest niet.
+    else if (loaded && !u.pathname.endsWith('sw.js') && !u.pathname.startsWith('/assets/')) lateRequests.push(r.url());
   });
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(m.text());

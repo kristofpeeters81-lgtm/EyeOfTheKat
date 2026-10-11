@@ -135,3 +135,26 @@ button {
 .debugpanel td { padding: 2px 0; }
 .debugpanel td:last-child { text-align: right; color: var(--text); }
 .debugpanel .btn { margin-top: 6px; }
+
+/* Kalibratie (#30) */
+.calibrate { gap: 14px; }
+.calibrate-body { flex: 1; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; min-height: 0; }
+.calibrate-preview { position: relative; }
+.calibrate-preview canvas { display: block; width: min(56vw, 70vh); max-width: 100%; border-radius: 18px; border: 2px solid var(--line); image-rendering: pixelated; }
+@media (orientation: portrait) { .calibrate-preview canvas { width: min(88vw, 52vh); } }
+.calibrate-side { max-width: 420px; align-items: flex-start; }
+.countdown {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font: 900 clamp(64px, 16vw, 160px)/1 var(--font-title); color: var(--eye);
+  text-shadow: 0 6px 30px rgba(255, 140, 30, 0.6);
+}
+.spirit-text { font-size: 1.25rem; font-weight: 600; }
+.tips { margin: 0; padding-left: 1.2em; font-size: 0.95rem; display: flex; flex-direction: column; gap: 6px; }
+.bar { width: 100%; height: 10px; border-radius: 999px; background: var(--night-2); overflow: hidden; }
+.bar > div { height: 100%; background: linear-gradient(90deg, var(--jade), var(--eye)); transition: width 0.1s linear; }
+
+/* De Geest (#38) */
+.spirit { animation: spirit-float 3.2s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(155, 231, 255, 0.7)); }
+.spirit.talking svg { animation: spirit-pulse 0.9s ease-in-out infinite; }
+@keyframes spirit-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes spirit-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }

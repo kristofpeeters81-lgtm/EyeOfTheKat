@@ -31,6 +31,8 @@ export interface Silhouette extends Rect {
   area: number;
   cx: number;
   cy: number;
+  /** Zwaartepunt (x) van het onderste 40 % van het lichaam: benen/heupen, ongevoelig voor armen. */
+  cxLow: number;
   /** Bovenste rij met lichaam (hoofd of handen). */
   top: number;
   /** Onderste rij met lichaam (voeten). */
@@ -48,6 +50,7 @@ export interface BodyCalibration {
   height: number;
   width: number;
   cx: number;
+  cxLow: number;
   area: number;
   frameWidth: number;
   frameHeight: number;
