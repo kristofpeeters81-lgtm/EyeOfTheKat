@@ -20,6 +20,18 @@ export const SCENARIOS = {
     await calibrateFlow(ctx);
   },
 
+  /** Blok 5: stijlvoorbeeld (screenshots om te beoordelen). */
+  async stijl({ page, clickText, sleep, OUT }) {
+    await clickText(page, 'Stijl');
+    for (let i = 1; i <= 4; i++) {
+      await sleep(1300);
+      await page.screenshot({ path: path.join(OUT, `stijl-${i}.png`) });
+    }
+    await page.setViewport({ width: 600, height: 900 });
+    await sleep(800);
+    await page.screenshot({ path: path.join(OUT, 'stijl-staand.png') });
+  },
+
   /** Blok 3: Testlab telt de bewegingen uit het draaiboek van het synthetische filmpje. */
   async testlab(ctx) {
     const { page, sleep, check, OUT } = ctx;

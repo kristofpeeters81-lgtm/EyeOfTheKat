@@ -86,8 +86,11 @@ Camera in de bandjes-modus op 320 px lange zijde; de silhouetmotor halveert zelf
 ## 4. Etappes en spellogica
 *(Game-blokken)*
 
-## 5. Held en wereld (visuals, animaties)
-*(Stijlblok)*
+## 5. Held en wereld (visuals, animaties) *(blok 5, ingevuld)*
+**Logica overnemen, visuals naar keuze:** `src/render/hero.ts` scheidt het **skelet + poses**
+(`targetPose`, `HeroAnimator`, overneembaar) van het **tekenen** (`drawHero`, B-world-stijl). De
+games vragen enkel een `HeroAction` op (bv. `'jump'`, `'strikeLeft'`). Wereld:
+`src/render/world.ts`. Kleuren: `src/render/theme.ts`.
 
 ## 6. Audio, veiligheid, opslag
 *(Latere blokken)*

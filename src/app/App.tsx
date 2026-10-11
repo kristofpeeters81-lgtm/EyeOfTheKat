@@ -3,10 +3,11 @@ import { BandSetup } from './BandSetup';
 import { Calibrate } from './Calibrate';
 import { CameraCheck } from './CameraCheck';
 import { DebugBar } from './DebugBar';
+import { StylePreview } from './StylePreview';
 import { Testlab } from './Testlab';
 import type { BodyCalibration } from '../vision/types';
 
-type Screen = { name: 'home' } | { name: 'camera' } | { name: 'calibrate'; then: 'home' | 'lab' } | { name: 'lab' } | { name: 'bands' };
+type Screen = { name: 'home' } | { name: 'camera' } | { name: 'calibrate'; then: 'home' | 'lab' } | { name: 'lab' } | { name: 'bands' } | { name: 'style' };
 
 export function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
@@ -33,6 +34,9 @@ export function App() {
             <button className="btn secondary" onClick={() => setScreen({ name: 'camera' })}>
               Cameratest
             </button>
+            <button className="btn secondary" onClick={() => setScreen({ name: 'style' })}>
+              Stijl
+            </button>
           </div>
           {calibration && <p className="muted">✓ Gekalibreerd: lichaam {calibration.height} px hoog.</p>}
         </div>
@@ -50,6 +54,7 @@ export function App() {
       {screen.name === 'lab' && (
         <Testlab onBack={home} onRecalibrate={() => setScreen({ name: 'calibrate', then: 'lab' })} onBands={() => setScreen({ name: 'bands' })} />
       )}
+      {screen.name === 'style' && <StylePreview onBack={home} />}
       {screen.name === 'bands' && <BandSetup onBack={() => setScreen({ name: 'lab' })} onDone={() => setScreen({ name: 'lab' })} />}
       <DebugBar />
     </>

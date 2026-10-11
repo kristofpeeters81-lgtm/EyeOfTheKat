@@ -756,3 +756,27 @@ hurken".
 de CSP), maar **niet** dat de drempels kloppen voor echte kinderen in een echte kamer. Dat blijft
 de toesteltest (#28). Het filmpje is niet in de repo opgenomen (±85 MB), het wordt bij gebruik
 gemaakt.
+
+## 51. Stijl "Night Summit" en de vier helden *(voorlopig)*
+
+**Beslissing (voorstel):**
+- **Wereld:** nachtlucht (indigo → paars aan de horizon), twinkelende sterren, een maan, en drie
+  berglagen die verschillend meeschuiven (parallax). Op de hoogste top gloeit het **Oog van de
+  Kat**: een amandelvormig amber juweel met een verticale kattenpupil die "ademt" en een jade
+  rand (#35).
+- **Helden:** een donker ninja-silhouet met een **lichtrand in de accentkleur** (gloed), een
+  accentkleurige gordel, een hoofdband met wapperende linten, en een oogspleet. Vier helden met
+  hetzelfde skelet en dezelfde poses (#24): **Kage** (kap), **Riku** (stekelhaar), **Mei**
+  (paardenstaart), **Neko** (kattenoortjes, een knipoog naar de naam). 6 pakkleuren × 6
+  accentkleuren.
+- **UI:** de lettertypes Unbounded (titels) en Outfit (tekst), amberkleurige knoppen.
+
+**Alternatieven:** een cartoon-look met ronde vormen. Ook een "Neon Stage" zoals Idol Academy kwam
+in aanmerking, maar die is te gelijkaardig, en Kristof koos voor stoer/sportief (#23).
+
+**Waarom:** Een silhouet met een gloeiende rand past bij "schaduw-ninja" en bij de
+silhouetdetectie (het kind is zelf een schaduw), oogt stoer zonder kinderachtig te zijn, en is
+volledig procedureel te tekenen: geen afbeeldingen, en elke kleur aanpasbaar (#24).
+
+**Gevolgen:** Te bekijken via **Stijl** op het startscherm. Kleuren staan centraal in
+`src/render/theme.ts` (wereld) en `src/app/styles.css` (UI). Bijsturen = enkel daar.

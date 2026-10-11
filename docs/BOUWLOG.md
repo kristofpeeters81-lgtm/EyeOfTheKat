@@ -288,3 +288,45 @@ gevolgd op kleur, zodat slagen en reiken preciezer worden.
 **Les voor B-world:**
 - `color.ts` is los overneembaar. De kleurkeuze gebeurt op het toestel zelf, er is geen vaste kleur.
 - Bandjes zijn een **opt-in** voor precisie. Alle etappes werken zonder (#40).
+
+## Blok 5 — Stijl, helden en wereld  (2026-10-11 → wacht op beoordeling door Kristof)
+
+**Doel:** de visuele stijl (#23), de vier helden met kleurkeuze (#24), de wereld met het Oog
+(#35) en de Geest (#38). Normaal eerst als voorbeeld voorgelegd; door #49 meteen gebouwd, maar
+**voorlopig** (#51).
+
+**Gebouwd:**
+- Scherm **Stijl** (startscherm): de wereld met parallax-bergen, het Oog op de top, de vier
+  helden in wisselende poses en kleuren, en een held in zijaanzicht die loopt, springt, duikt en
+  een kikkersprong maakt.
+- De Geest van de Berg als zwevend lichtje (SVG, al in blok 2).
+
+**Hoe het werkt:**
+- **Skelet** (`src/render/hero.ts`): 11 punten (hoofd, nek, heup, 2 ellebogen, 2 handen,
+  2 knieën, 2 voeten), in eenheden van de lengte van de held. Voor elk van de 19 acties is er een
+  pose in vooraanzicht en/of zijaanzicht. Lopen is een berekende cyclus (sinus) waarvan de pas en
+  de armzwaai meegroeien met de intensiteit. `HeroAnimator` laat de pose vloeiend naar het doel
+  gaan (exponentieel, snelheid 14/s), zodat een wisselende detectie geen schokken geeft.
+- **Tekenen:** eerst het hele silhouet in de accentkleur met `shadowBlur` (gloed), daarna het pak
+  erover. Ledematen zijn dikke lijnen met ronde uiteinden, de romp is een trapezium. Daarna komen
+  gordel, hoofdband met 2 linten (sinusgolf, wapperen naar achter), oogspleet met knipperende ogen,
+  en de kap/haar/oortjes per held.
+- **Wereld** (`src/render/world.ts`): lucht met een kleurverloop, 140 vaste sterren (eigen
+  toevalsgenerator met zaadje) die twinkelen, en een maan met kraters. Bergen: elke laag is een
+  som van sinussen (oneindig doorlopend), en de verste laag heeft een vaste top met sneeuw
+  (geknipt op de bergvorm) en het Oog erboven. `drawGround` tekent het pad met meeschuivende
+  naden.
+- **Canvas** (`src/render/canvas.ts`): scherp op hoge-resolutieschermen, maar max. 2× (oude
+  tablets).
+
+**Bestanden:** `src/render/{theme,hero,world,canvas}.ts`, `src/app/StylePreview.tsx`.
+
+**Beslissingen:** #51 (voorlopig).
+
+**Getest:** e2e-scenario `stijl` maakt screenshots liggend en staand (`e2e-output/stijl-*.png`).
+Daarop zijn twee fouten gezien en hersteld: een zwevende sneeuwkap en "0 fps" in het debugbalkje
+zonder camera.
+
+**Les voor B-world:** de held en de wereld zijn puur Canvas2D zonder afbeeldingen. Een andere
+B-world-stijl betekent enkel `drawHero`/`drawMountains` vervangen. Het skelet en de poses
+(acties) blijven bruikbaar.

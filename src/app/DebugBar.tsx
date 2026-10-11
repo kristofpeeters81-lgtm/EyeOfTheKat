@@ -34,9 +34,7 @@ export function DebugBar({ extra }: { extra?: React.ReactNode }) {
   return (
     <>
       <button className="debugbar" onClick={() => setOpen((o) => !o)} aria-label="Debugpaneel">
-        <span>
-          <b>{stats.fps.toFixed(0)}</b> fps
-        </span>
+        <span>{cam ? <><b>{stats.fps.toFixed(0)}</b> fps</> : 'camera uit'}</span>
         {power !== null && (
           <span>
             <span className="dot" style={{ background: ZONE_COLORS[zone] }} /> <b>{Math.round(power)}</b> power
