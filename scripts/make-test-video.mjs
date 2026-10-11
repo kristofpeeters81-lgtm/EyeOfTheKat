@@ -8,12 +8,12 @@
 //    2.5– 3.5  stapt naar rechts uit beeld
 //    3.5– 9.0  lege kamer (aftellen 5 s + achtergrond leren)
 //    9.0–10.0  komt terug naar het midden
-//   10.0–14.0  staat stil (lichaamskalibratie)
-//   14.0–19.0  4 sprongen
-//   19.5–25.0  3 keer hurken
-//   25.5–30.0  stap naar rechts, midden, stap naar links, midden
-//   30.5–34.0  lopen ter plaatse (knieën + armen)
-//   34.0–36.0  staat stil
+//   10.0–17.0  staat stil (lichaamskalibratie + naar het Testlab)
+//   17.0–22.0  4 sprongen
+//   22.5–28.0  3 keer hurken
+//   28.5–33.0  stap naar rechts, midden, stap naar links, midden
+//   33.5–37.0  lopen ter plaatse (knieën + armen)
+//   37.0–39.0  staat stil
 //
 // Node ≥ 22.6 leest de TypeScript-scène rechtstreeks (type stripping).
 
@@ -25,7 +25,9 @@ const OUT = process.argv[2] ?? path.join('e2e-output', 'synthetisch.y4m');
 const W = 320;
 const H = 240;
 const FPS = 20;
-const DURATION = 36;
+const DURATION = 39;
+/** Begin van de bewegingen (na kalibratie). */
+const M = 17;
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 
 const base = { cx: W / 2, footY: H * 0.9, height: H * 0.62 };
@@ -37,31 +39,31 @@ function person(t) {
   if (t < 3.5) return { ...base, cx: lerp(W / 2, W + 60, (t - 2.5) / 1) };
   if (t < 9) return null;
   if (t < 10) return { ...base, cx: lerp(W + 60, W / 2, (t - 9) / 1) };
-  if (t < 14) return { ...base };
-  if (t < 19) {
+  if (t < M) return { ...base };
+  if (t < M + 5) {
     // 4 sprongen van 1,25 s: 0,45 s in de lucht (parabool tot 14 % van de lengte).
-    const k = (t - 14) % 1.25;
+    const k = (t - M) % 1.25;
     const lift = k < 0.45 ? Math.sin((k / 0.45) * Math.PI) * base.height * 0.14 : 0;
     return { ...base, lift };
   }
-  if (t < 19.5) return { ...base };
-  if (t < 25) {
+  if (t < M + 5.5) return { ...base };
+  if (t < M + 11) {
     // 3 keer hurken van 1,8 s: 0,5 neer, 0,6 laag, 0,5 op, 0,2 rechtop.
-    const k = (t - 19.5) % 1.8;
+    const k = (t - M - 5.5) % 1.8;
     const squat = k < 0.5 ? k / 0.5 : k < 1.1 ? 1 : k < 1.6 ? 1 - (k - 1.1) / 0.5 : 0;
     return { ...base, squat };
   }
-  if (t < 25.5) return { ...base };
-  if (t < 30) {
-    const k = t - 25.5;
+  if (t < M + 11.5) return { ...base };
+  if (t < M + 16) {
+    const k = t - M - 11.5;
     const shift = base.height * 0.4;
     const cx = k < 0.3 ? lerp(W / 2, W / 2 + shift, k / 0.3) : k < 1.3 ? W / 2 + shift : k < 1.6 ? lerp(W / 2 + shift, W / 2, (k - 1.3) / 0.3) : k < 2.3 ? W / 2 : k < 2.6 ? lerp(W / 2, W / 2 - shift, (k - 2.3) / 0.3) : k < 3.6 ? W / 2 - shift : lerp(W / 2 - shift, W / 2, (k - 3.6) / 0.3);
     return { ...base, cx };
   }
-  if (t < 30.5) return { ...base };
-  if (t < 34) {
+  if (t < M + 16.5) return { ...base };
+  if (t < M + 20) {
     // Lopen ter plaatse: ±3 passen per seconde.
-    const phase = Math.sin((t - 30.5) * Math.PI * 6);
+    const phase = Math.sin((t - M - 16.5) * Math.PI * 6);
     const lift = Math.abs(phase) * base.height * 0.16;
     return {
       ...base,

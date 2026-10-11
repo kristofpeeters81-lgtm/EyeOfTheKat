@@ -734,3 +734,25 @@ held, voorstellen #41–#48) blijft `voorlopig` tot Kristof het bekeken heeft. D
 daarom zo gebouwd dat hij centraal aan te passen is (kleuren en tekenfuncties apart). Elk blok
 wordt automatisch getest en apart gecommit, zodat terugdraaien per blok kan. De testmomenten op
 het toestel staan per blok in `PLANNING.md` als 🧪.
+
+## 50. Synthetisch testfilmpje i.p.v. Commons-filmpjes *(voorlopig)*
+
+**Beslissing (voorstel):** Voor de automatische eind-tot-eind-tests gebruiken we een
+**synthetisch filmpje**: een getekende kamer met een getekende figuur die een vast draaiboek volgt
+(uit beeld stappen, terugkomen, springen, hurken, zijstappen, lopen). Het script
+`scripts/make-test-video.mjs` maakt het filmpje, met dezelfde scène-code als de unit tests
+(`src/vision/testing/scene.ts`). Eigen opnames van Kristof (#32, deel 2) blijven de
+realistische aanvulling.
+
+**Alternatieven:** gratis filmpjes van Wikimedia Commons (#32, deel 1).
+
+**Waarom:** Achtergrondaftrek heeft een begin nodig waarin de kamer **leeg** is (#30). In de
+gekende Commons-filmpjes (zoals het jumping-jack-filmpje van Idol Academy) staat de persoon
+voortdurend in beeld. De app kan daarmee de lege kamer nooit leren. Een synthetisch filmpje lost
+dat op, en het draaiboek is exact gekend. De test kan dus precies controleren "4 sprongen, 3 keer
+hurken".
+
+**Gevolgen:** De e2e-tests bewijzen dat de keten werkt (camera → motor → detectoren → scherm, met
+de CSP), maar **niet** dat de drempels kloppen voor echte kinderen in een echte kamer. Dat blijft
+de toesteltest (#28). Het filmpje is niet in de repo opgenomen (±85 MB), het wordt bij gebruik
+gemaakt.

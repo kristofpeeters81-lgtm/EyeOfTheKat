@@ -1,5 +1,6 @@
 import { ZONE_NAMES } from '../vision/power';
 import { VisionEngine, type VisionResult } from '../vision/engine';
+import { MoveTracker, type MoveEvent, type MoveState } from '../vision/moves';
 import type { Frame } from '../vision/types';
 import { debugStore } from './debug';
 import { getSession } from './index';
@@ -10,7 +11,12 @@ import type { CameraSession } from './session';
  * blijft bewaard tussen schermen. Het actieve scherm krijgt elk resultaat via `setListener`.
  */
 
-export type VisionListener = (r: VisionResult, frame: Frame) => void;
+export interface Moves {
+  events: MoveEvent[];
+  state: MoveState;
+}
+
+export type VisionListener = (r: VisionResult, frame: Frame, moves: Moves) => void;
 
 export type DebugMaskKind = 'person' | 'motion';
 
@@ -19,6 +25,7 @@ const PRESENCE_TEXT = { ok: 'in beeld', missing: 'uit beeld', two: 'tweede perso
 export class VisionRuntime {
   readonly session: CameraSession;
   readonly engine = new VisionEngine();
+  readonly moves = new MoveTracker();
   private listener: VisionListener | null = null;
   debugMask: DebugMaskKind = 'person';
   last: VisionResult | null = null;
@@ -47,9 +54,10 @@ export class VisionRuntime {
 
   private onFrame(frame: Frame, t: number): void {
     const r = this.engine.process(frame, t);
+    const events = this.moves.update(r);
     this.last = r;
     this.publishDebug(r);
-    this.listener?.(r, frame);
+    this.listener?.(r, frame, { events, state: this.moves.state });
   }
 
   private publishDebug(r: VisionResult): void {

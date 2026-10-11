@@ -16,13 +16,42 @@ export const SCENARIOS = {
 
   /** Blok 2: kalibratie met het synthetische filmpje (npm run testvideo). */
   async calibrate(ctx) {
+    await clickTextEntry(ctx, 'Kalibreren');
     await calibrateFlow(ctx);
+  },
+
+  /** Blok 3: Testlab telt de bewegingen uit het draaiboek van het synthetische filmpje. */
+  async testlab(ctx) {
+    const { page, sleep, check, OUT } = ctx;
+    await clickTextEntry(ctx, 'Testlab');
+    const camStart = Date.now();
+    await calibrateFlow({ ...ctx, skipDebug: true });
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Testlab'), { timeout: 5000 });
+    // Draaiboek: bewegingen van 17 s tot 37 s na de camera-start.
+    const wait = 38200 - (Date.now() - camStart);
+    if (wait > 0) await sleep(wait);
+    const counts = await page.evaluate(() => {
+      const out = {};
+      for (const tile of document.querySelectorAll('.tile')) out[tile.querySelector('span')?.textContent ?? '?'] = Number(tile.querySelector('b')?.textContent ?? '0');
+      return out;
+    });
+    await page.screenshot({ path: path.join(OUT, 'testlab.png') });
+    console.log('  tellers:', JSON.stringify(counts));
+    check(counts.Sprongen === 4, `4 sprongen (${counts.Sprongen})`);
+    check(counts.Hurken === 3, `3 keer hurken (${counts.Hurken})`);
+    check(counts.Zijstappen === 4, `4 zijbaanwissels (${counts.Zijstappen})`);
+    check(counts.Passen >= 6, `passen bij lopen ter plaatse (${counts.Passen})`);
+    check(counts.Kikkersprongen === 0, `geen kikkersprongen (${counts.Kikkersprongen})`);
   },
 };
 
+/** Klik de knop op het startscherm. */
+async function clickTextEntry({ page, clickText }, text) {
+  await clickText(page, text);
+}
+
 /** Volledige kalibratie doorlopen; geeft de tijd (ms sinds camera-start) terug waarop ze klaar was. */
-export async function calibrateFlow({ page, clickText, debugValues, sleep, check, OUT }) {
-  await clickText(page, 'Kalibreren');
+export async function calibrateFlow({ page, clickText, debugValues, sleep, check, OUT, skipDebug }) {
   const camStart = Date.now();
   await page.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent?.includes('Klaar, start')), { timeout: 10000 });
   await sleep(500);
@@ -34,11 +63,13 @@ export async function calibrateFlow({ page, clickText, debugValues, sleep, check
   await sleep(1200);
   await page.screenshot({ path: path.join(OUT, 'kalibratie-3-terugkomen.png') });
   const ok = await page
-    .waitForFunction(() => document.body.textContent?.includes('Gekalibreerd'), { timeout: 15000 })
+    .waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Klaar!'), { timeout: 15000 })
     .then(() => true)
     .catch(() => false);
   const doneAt = Date.now() - camStart;
   check(ok, `kalibratie afgerond na ${(doneAt / 1000).toFixed(1)} s`);
+  if (skipDebug) return doneAt;
+  await sleep(1600);
   await page.click('.debugbar');
   await sleep(500);
   const v = await debugValues(page);

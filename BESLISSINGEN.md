@@ -60,3 +60,4 @@ nieuw nummer; de oude krijgt status `vervangen door #x` en blijft staan.
 | 47 | 2026-10-11 | Opwarming 60 s; rustpauze 30 s na elke etappe, 45 s na sprint-etappes | voorlopig |
 | 48 | 2026-10-11 | Controle bij elke build: geen ML-pakketten en geen netwerk-API's in de code, CSP `connect-src 'none'` aanwezig | voorlopig |
 | 49 | 2026-10-11 | Kristof gaf groen licht om zonder tussentijdse goedkeuring door te bouwen ("verras me"); stijl en voorstellen blijven voorlopig tot hij ze bekijkt | beslist |
+| 50 | 2026-10-11 | Testfilmpjes: synthetisch filmpje (getekende kamer + figuur, `npm run testvideo`) vervangt de gratis Commons-filmpjes uit #32 | voorlopig |

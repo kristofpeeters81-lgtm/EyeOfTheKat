@@ -60,7 +60,17 @@ Het kalibratieverloop zelf (stappen, teksten, aftellen) staat los van de UI in
 `DEFAULT_ENGINE_OPTIONS`). Pas ze aan op basis van de toesteltests en leg elke wijziging vast als
 beslissing.
 
-### 3.2 Detectoren *(blok 3)*
+### 3.2 Detectoren *(blok 3, ingevuld)*
+**Letterlijk overnemen:** `src/vision/moves.ts` (+ `moves.test.ts`, `testing/harness.ts`).
+```ts
+const tracker = new MoveTracker();
+const events = tracker.update(visionResult);  // MoveEvent[]: jump, land, squat-down, squat,
+                                              // frogleap, lane, strike, reach, step
+tracker.state;                                // airborne, low, lane, zones, armUp, poses, holdMs
+```
+Regels en drempels: `docs/BOUWLOG.md` blok 3 (tabel) en `MOVE_THRESHOLDS`. Het Testlab
+(`src/app/Testlab.tsx` + `src/render/lab.ts`) is in B-world handig als verborgen
+begeleidersscherm.
 
 ### 3.3 Kleurbandjes *(blok 4)*
 

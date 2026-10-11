@@ -86,6 +86,7 @@ export class BodyCalibrator {
       height: bottom - top + 1,
       width: pick((x) => x.width),
       cx: pick((x) => x.cx),
+      cy: pick((x) => x.cy),
       cxLow: pick((x) => x.cxLow),
       area: pick((x) => x.area),
       frameWidth: w,

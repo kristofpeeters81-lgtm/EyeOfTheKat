@@ -50,6 +50,7 @@ export interface BodyCalibration {
   height: number;
   width: number;
   cx: number;
+  cy: number;
   cxLow: number;
   area: number;
   frameWidth: number;
@@ -71,4 +72,6 @@ export interface BodyPose {
   feetRise: number;
   /** Horizontale verschuiving van het zwaartepunt (+ = naar rechts op het scherm), in lichaamslengtes. */
   shift: number;
+  /** Hoeveel lager het zwaartepunt staat dan bij de kalibratie (+ = lager, hurken), in lichaamslengtes. */
+  cyDrop: number;
 }

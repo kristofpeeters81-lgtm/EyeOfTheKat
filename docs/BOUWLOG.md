@@ -173,3 +173,62 @@ nagaan of het (alleen) in beeld staat.
   constanten of opties bovenaan elk bestand.
 - De kalibratie hoort bij een **beurt**: een nieuwe speler = opnieuw "lichaam kalibreren". De
   achtergrond blijft geldig zolang het toestel niet verplaatst wordt.
+
+## Blok 3 — Detectoren + Testlab  (2026-10-11 → wacht op test door Kristof)
+
+**Doel:** de houding (blok 2) omzetten in bewegingen die de etappes nodig hebben, en een scherm om
+elke beweging los te testen.
+
+**Gebouwd:**
+- `MoveTracker` (src/vision/moves.ts) met detectoren voor: **sprong** (+ landing), **hurken**,
+  **kikkersprong**, **zijbaan** (links/midden/rechts), **slag** (links/rechts/omhoog), **reiken**
+  boven het hoofd (links/rechts, voor klimmen), **passen** (lopen ter plaatse) en **houdingen
+  vasthouden** (hurkzit, ster, armen omhoog).
+- **Testlab**: live silhouet (effen vorm) met de gekalibreerde lijnen en alle doelvlakken
+  (rood = slagzones, oranje = reikzones, ze lichten op bij een raak). Daarnaast tellers die
+  oppoppen, houdtijden, een Ninja Power-balk en een waarschuwing bij uit beeld / tweede persoon.
+  Knoppen: tellers op 0, opnieuw kalibreren.
+- Startscherm: "Testlab" (kalibreert eerst als dat nog niet gebeurd is), "Kalibreren", "Cameratest".
+
+**Hoe het werkt** (drempels in `MOVE_THRESHOLDS`, alles in lichaamslengtes):
+| Beweging | Regel |
+|---|---|
+| Sprong | voeten > 0,06 én bovenkant > 0,03 omhoog, lichaam niet gehurkt (> 0,75); geland bij voeten < 0,025; min. 250 ms tussen sprongen |
+| Hurken | voeten op de grond en (hoogte < 0,8 of zwaartepunt > 0,1 lager); rechtop bij hoogte > 0,9 en zwaartepunt < 0,04; telt bij het rechtkomen |
+| Kikkersprong | sprong binnen 1,3 s na het laagste moment van een hurk |
+| Zijbaan | benen (`cxLow`) > 0,18 verschoven = zijbaan; < 0,1 = terug in het midden. Armen spreiden verschuift `cxLow` niet |
+| Slag | ≥ 8 % van een doelvlak naast (0,26–0,7 opzij, hoogte 0,08–0,45 onder de kruin) of boven het hoofd bedekt; vrij bij < 3 %. Vlakken bewegen mee met het lichaam, dus opzij stappen telt niet als slag |
+| Reiken | ≥ 8 % van een vlak boven het hoofd (0,08–0,34 naast het midden, het hoofd zelf niet), niet tijdens een sprong |
+| Houding | hurkzit (hoogte 0,45–0,85), ster (breedte ≥ 1,6×), armen omhoog (bovenkant ≥ 0,12 hoger, breedte < 1,6×); telt enkel bij Power ≤ 45, mag 300 ms wankelen |
+| Passen | beweging in de benen links vs. rechts van het midden; een pas = de kant met de meeste beweging wisselt (verschil ≥ 25 %) |
+
+Uit beeld (`presence` ≠ ok) = niets tellen.
+
+**Bestanden:** `src/vision/moves.ts` (+ test), `src/vision/testing/harness.ts` (testhulp + clips),
+`src/render/lab.ts`, `src/app/Testlab.tsx`, `src/runtime/vision.ts` (MoveTracker ingebouwd),
+`scripts/e2e-scenarios.mjs` (scenario `testlab`), `scripts/make-test-video.mjs` (draaiboek
+verlengd).
+
+**Beslissingen:** #50 (synthetisch testfilmpje).
+
+**Getest:**
+- 13 unit tests voor de detectoren (36 in totaal): sprongen, kleine sprong telt niet, hurken,
+  kikkersprong, een late sprong is geen kikkersprong, zijbaan, armen spreiden ≠ zijstap, slagen in
+  3 richtingen, afwisselend reiken, springen ≠ reiken, ster vasthouden, passen, niets tellen uit
+  beeld.
+- **E2E** (headless Chrome, synthetisch filmpje): het Testlab telt **exact** 4 sprongen, 3 keer
+  hurken, 4 zijbaanwissels, 21 passen (= 6/s × 3,5 s) en 0 kikkersprongen.
+- **Op het toestel: nog niet getest.** Kristof: doe in het Testlab elke beweging 10× (liggend en
+  staand) en noteer per teller wat hij aangeeft. Let vooral op: kleine sprongjes, hurken met de
+  armen vooruit, en slagen met een korte arm (kinderen).
+
+**Problemen en oplossingen:**
+- Het Commons-filmpje (Idol Academy) is onbruikbaar voor achtergrondaftrek: de figuur verlaat het
+  beeld nooit (#50).
+- In de eerste versie van de testclip zat in de "kleine sprong" toch een sprong van 9 px. Nu
+  schalen de clips mee met de gevraagde hoogte.
+
+**Les voor B-world:**
+- Games gebruiken enkel `MoveEvent`s en `MoveState`. Ze weten niet hoe een sprong gemeten wordt,
+  dus de detectoren kunnen later verbeterd of vervangen worden zonder dat er een game moet
+  veranderen.

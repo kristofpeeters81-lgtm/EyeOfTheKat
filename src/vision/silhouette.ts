@@ -152,6 +152,7 @@ export function toPose(s: Silhouette, c: BodyCalibration): BodyPose {
     topRise: (c.top - s.top) / c.height,
     feetRise: (c.bottom - s.bottom) / c.height,
     shift: (s.cxLow - c.cxLow) / c.height,
+    cyDrop: (s.cy - c.cy) / c.height,
   };
 }
 
