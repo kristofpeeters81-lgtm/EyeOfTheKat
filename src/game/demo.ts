@@ -6,6 +6,7 @@ import { ShadowStrike } from './stages/shadowStrike';
 import { ShadowWall } from './stages/shadowWall';
 import { TheEye } from './stages/theEye';
 import { WallClimb } from './stages/wallClimb';
+import { WarmUp } from './stages/warmUp';
 import { StoneHop } from './stages/stoneHop';
 import { TimedObstacleStage } from './stages/timed';
 import { idleState } from './testing';
@@ -79,6 +80,10 @@ export class DemoBot {
       if (stage.inFinal) state.poses['arms-up'] = true;
       legPower = stage.inSprint ? 66 : 20;
       power = 58;
+    } else if (stage instanceof WarmUp) {
+      legPower = 32;
+      power = 30;
+      if (Math.floor(this.t / 1800) !== Math.floor((this.t - dt) / 1800)) events.push({ type: 'squat', t: this.t, depth: 0.3 });
     } else if (stage instanceof StoneHop && stage.isActiveSet) {
       if (!stage.waiting && this.lane !== stage.target && Math.floor(this.t / 600) % 2 === 0) {
         this.lane = stage.target;

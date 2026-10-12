@@ -9,7 +9,7 @@ import type { BodyPose } from '../vision/types';
  * krijgt per camerabeeld een `GameInput` en geeft gebeurtenissen terug (geluid, stem, UI).
  */
 
-export type StageId = 'bridge-sprint' | 'duck-beams' | 'log-roll' | 'frog-leap' | 'stone-hop' | 'shadow-wall' | 'shadow-strike' | 'wall-climb' | 'the-eye';
+export type StageId = 'bridge-sprint' | 'duck-beams' | 'log-roll' | 'frog-leap' | 'stone-hop' | 'shadow-wall' | 'shadow-strike' | 'wall-climb' | 'the-eye' | 'warm-up';
 
 /** Wat een etappe per beeld te weten krijgt. */
 export interface GameInput {

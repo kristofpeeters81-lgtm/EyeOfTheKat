@@ -10,7 +10,7 @@ import { WallClimb } from '../../game/stages/wallClimb';
 import type { Stage, StageId } from '../../game/types';
 import { drawHero, HeroAnimator, type View } from '../hero';
 import type { HeroLook } from '../theme';
-import { drawMountains, drawSky } from '../world';
+import { drawGround, drawMountains, drawSky } from '../world';
 import { drawBridge } from './bridge';
 import { drawDuckBeams, drawFrogLeap, drawLogRoll, drawStoneHop, obstacleSpeed, scrollFor } from './setA';
 import { drawShadowStrike, drawShadowWallBack, drawShadowWallFront, drawTheEye, drawWallClimb } from './setB';
@@ -31,6 +31,7 @@ export const STAGE_VIEW: Record<StageId, View> = {
   'shadow-strike': 'front',
   'wall-climb': 'front',
   'the-eye': 'side',
+  'warm-up': 'side',
 };
 
 export class StageRenderer {
@@ -76,6 +77,11 @@ export class StageRenderer {
     else if (stage instanceof ShadowStrike) drawShadowStrike(ctx, L, stage, t);
     else if (stage instanceof WallClimb) drawWallClimb(ctx, L, stage, this.climb, t);
     else if (stage instanceof TheEye) drawTheEye(ctx, L, stage, this.scroll, t);
+    else {
+      // Opwarming en andere eenvoudige scènes: pad dat meeschuift als de held loopt.
+      if (hs.action === 'run') this.scroll += dtMs * 0.12 * (0.3 + hs.runIntensity);
+      drawGround(ctx, w, h, L.groundY, this.scroll, 'stone');
+    }
     const pose = this.hero.update(hs.action, dtMs, hs.runIntensity);
     const x = L.heroX + hs.offsetX * L.heroSize;
     const y = groundY - hs.lift * L.heroSize;

@@ -23,7 +23,7 @@ export const SCENARIOS = {
   /** Blok 6: Bridge Sprint volledig spelen (gebruik E2E_QUERY=?snel=1 voor de korte versie). */
   async bridge(ctx) {
     const { page, clickText, sleep, check, OUT } = ctx;
-    await clickText(page, 'Spelen');
+    await clickText(page, 'Losse etappes');
     await calibrateFlow({ ...ctx, skipDebug: true });
     await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 8000 });
     await clickText(page, 'Bridge Sprint');
@@ -60,7 +60,7 @@ export const SCENARIOS = {
    * Optioneel E2E_STAGES="Log Roll,Stone Hop" om er enkele te kiezen.
    */
   async demo({ page, clickText, sleep, check, OUT }) {
-    await clickText(page, 'Spelen');
+    await clickText(page, 'Losse etappes');
     await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 8000 });
     const names = await page.evaluate(() => [...document.querySelectorAll('.stage-card:not([disabled]) b')].map((b) => b.textContent ?? ''));
     const only = process.env.E2E_STAGES?.split(',').map((x) => x.trim());
@@ -81,6 +81,49 @@ export const SCENARIOS = {
       await clickText(page, 'Stop');
       await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 5000 });
     }
+  },
+
+  /**
+   * Blok 10: een volledige ronde in demomodus: nieuwe ninja → kaart → opwarming → Bridge Sprint →
+   * resultaat → rust → kaart met de volgende etappe open.
+   * Gebruik: E2E_SCENARIO=reis E2E_QUERY="?demo=1&snel=1" npm run e2e
+   */
+  async reis({ page, clickText, sleep, check, OUT }) {
+    await clickText(page, 'Spelen');
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Wie speelt'), { timeout: 5000 });
+    await clickText(page, 'Nieuwe ninja');
+    await page.type('input', 'Testninja');
+    await clickText(page, 'Neko');
+    await sleep(500);
+    await page.screenshot({ path: path.join(OUT, 'reis-1-ninja.png') });
+    await clickText(page, 'Maak mijn ninja');
+    await page.waitForSelector('.map-node', { timeout: 5000 });
+    await sleep(800);
+    await page.screenshot({ path: path.join(OUT, 'reis-2-kaart.png') });
+    const lockedBefore = await page.evaluate(() => document.querySelectorAll('.map-node.locked').length);
+    check(lockedBefore === 8, `8 etappes op slot bij de start (${lockedBefore})`);
+    await page.click('.map-node.current');
+    await page.waitForFunction(() => document.querySelector('.hud-title b')?.textContent?.includes('Opwarming'), { timeout: 5000 });
+    check(true, 'opwarming start bij de eerste etappe');
+    await page.waitForFunction(() => document.querySelector('.hud-title b')?.textContent?.includes('Bridge Sprint'), { timeout: 60000 });
+    check(true, 'na de opwarming start Bridge Sprint');
+    await page.waitForSelector('.result', { timeout: 120000 });
+    await sleep(1200);
+    await page.screenshot({ path: path.join(OUT, 'reis-3-resultaat.png') });
+    await clickText(page, 'Naar de kaart');
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Even rusten'), { timeout: 5000 });
+    await page.screenshot({ path: path.join(OUT, 'reis-4-rust.png') });
+    await page.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent?.includes('Naar de kaart') && !b.disabled), { timeout: 20000 });
+    await clickText(page, 'Naar de kaart');
+    await page.waitForSelector('.map-node', { timeout: 5000 });
+    await sleep(800);
+    const lockedAfter = await page.evaluate(() => document.querySelectorAll('.map-node.locked').length);
+    // In demomodus wordt er niets opgeslagen: de kaart blijft dezelfde.
+    check(lockedAfter === 8, `demo slaat geen voortgang op (${lockedAfter} op slot)`);
+    await page.screenshot({ path: path.join(OUT, 'reis-5-kaart.png') });
+    await page.setViewport({ width: 600, height: 900 });
+    await sleep(800);
+    await page.screenshot({ path: path.join(OUT, 'reis-6-kaart-staand.png') });
   },
 
   /** Blok 5: stijlvoorbeeld (screenshots om te beoordelen). */

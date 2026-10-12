@@ -111,7 +111,15 @@ module). Enkel `music.ts` (noten/ritme) en de lijst effecten in `synth.ts` zijn 
 Koppeling met een etappe: `src/app/useStageAudio.ts` (`handleStageEvent`). Privacy: enkel lokale
 stemmen (`pickVoice`).
 
-### 6.2 Veiligheid en opslag *(latere blokken)*
+### 6.2 Veiligheid en spelverloop *(blok 10, ingevuld)*
+- **Veiligheid:** ruimte-check en kalibratie (blok 2), pauze bij uit beeld (`stageBase.ts`),
+  opwarming (`stages/warmUp.ts`), rustpauzes (`RestScreen.tsx`, duur in `catalog.ts`: `restAfterMs`).
+- **Profielen en voortgang:** `src/game/profiles.ts` (puur, met een opslag-interface). In B-world:
+  koppelen aan de B-world-gebruikers/opslag via `ProfileStorage`.
+- **Opnieuw bouwen in B-world-stijl:** `ProfileSelect`, `ProfileEditor`, `WorldMap`, `RestScreen` en
+  het verloop in `App.tsx` (een eenvoudige toestandsmachine met schermen).
+
+### 6.3 Opslag en export *(blok 11)*
 
 ## 7. Observaties naast Idol Academy
 *(Laatste blok)* Geen formeel vergelijkend rapport (#28), enkel korte observaties die helpen

@@ -805,3 +805,27 @@ smal staand scherm nog korter. Dat is te kort voor een 6-jarige om te zien, te b
 hurken. Met een vaste reactietijd is het op elk toestel even eerlijk (#11).
 
 **Gevolgen:** Na de toesteltest eventueel bijstellen (`LEAD_MS` in `src/render/stages/setA.ts`).
+
+## 54. Ontgrendelen met sterren; bonus-etappe uitgesteld *(voorlopig)*
+
+**Beslissing (voorstel):** Sterren ontgrendelen kleuren voor de ninja (#24, #25). De eerste 2
+accentkleuren en 3 pakkleuren zijn gratis. Daarna gaan accentkleuren open bij 3, 6, 9 en 12
+sterren, en pakkleuren bij 15, 18 en 21 sterren (max. 27 sterren = 9 etappes × 3). De
+**bonus-etappe** uit #25 is nog niet gebouwd.
+
+**Waarom:** Kleuren zijn een zichtbare beloning zonder extra spelinhoud, en de drempels zijn
+gespreid over de hele kaart. Een bonus-etappe vraagt een tiende spelvorm, en dat is pas zinvol als
+de toesteltests tonen welke bewegingen het best werken.
+
+**Gevolgen:** De drempels staan in `ACCENT_UNLOCK`/`SUIT_UNLOCK` (`src/game/profiles.ts`). Op de
+kaart verschijnt een melding bij een nieuwe kleur of etappe.
+
+## 55. Startscherm en begeleidersmenu; demo slaat niets op *(voorlopig)*
+
+**Beslissing (voorstel):** Op het startscherm staat voor kinderen één grote knop **Spelen**
+(→ "Wie speelt?") en de geluidsknoppen. Testlab, kalibreren, cameratest, stijl, losse etappes en
+de opties "korte etappes" en "demo" staan onder een uitklapbaar **Voor begeleiders**. In de
+demomodus (#52) wordt geen voortgang of score in de profielen bewaard.
+
+**Waarom:** Kinderen moeten niet per ongeluk in testschermen terechtkomen, en een demo mag het
+scorebord niet vervalsen.

@@ -6,6 +6,7 @@ import { ShadowStrike } from './stages/shadowStrike';
 import { ShadowWall } from './stages/shadowWall';
 import { TheEye } from './stages/theEye';
 import { WallClimb } from './stages/wallClimb';
+import { WarmUp } from './stages/warmUp';
 import { StoneHop } from './stages/stoneHop';
 import type { Stage, StageId, StageSettings } from './types';
 
@@ -41,7 +42,11 @@ export const STAGES: StageInfo[] = [
   { id: 'the-eye', name: 'The Eye', dutch: 'Finale', blurb: 'De laatste klim naar het Oog van de Kat.', type: 'finale', move: 'Alles door elkaar', restAfterMs: 45000, create: (s) => new TheEye(s) },
 ];
 
+/** De opwarming (#47): geen etappe op de kaart, wel met hetzelfde spelscherm. */
+export const WARM_UP_INFO: StageInfo = { id: 'warm-up', name: 'Opwarming', dutch: 'Opwarming', blurb: 'Rustig lopen, armen zwaaien, 3 keer hurken.', type: 'cardio', move: 'Rustig bewegen', restAfterMs: 0, create: (s) => new WarmUp(s) };
+
 export function stageInfo(id: StageId): StageInfo {
+  if (id === 'warm-up') return WARM_UP_INFO;
   const s = STAGES.find((x) => x.id === id);
   if (!s) throw new Error(`Onbekende etappe ${id}`);
   return s;

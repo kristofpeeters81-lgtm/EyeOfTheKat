@@ -520,3 +520,55 @@ spellogica). De bot in `demo.ts` is handig voor elke game: als "attract mode" en
 
 **Les voor B-world:** tekenen in twee lagen (vóór en na de held) maakt "door een gat passen"
 mogelijk zonder echte 3D. Nuttig voor meer games in die stijl.
+
+## Blok 10 — Spelverloop: profielen, held, wereldkaart, opwarming, rust  (2026-10-12 → wacht op test door Kristof)
+
+**Doel:** van losse etappes naar een echt spel met beurten (#19), een eigen held (#24), een
+wereldkaart (#42), ontgrendelen (#25), opwarming en rust (#47) en een scorebord.
+
+**Gebouwd:**
+- **Profielen** (`src/game/profiles.ts`, puur + `src/app/profileStore.ts` voor localStorage):
+  bijnaam (max. 16 tekens), leeftijd (6–12), held en kleuren, en per etappe de beste sterren, de
+  beste score en het aantal keer gespeeld. Etappes gaan één voor één open. Sterren ontgrendelen
+  kleuren (#54). Scorebord op sterren, dan punten. Er wordt nooit een foto bewaard.
+- **"Wie speelt?"** (`ProfileSelect.tsx`): kaarten met bewegende held, sterren en punten, "Nieuwe
+  ninja", "Aanpassen" en een 🏆 scorebord (met de uitleg dat doelen per leeftijd geschaald zijn).
+- **Ninja maken/aanpassen** (`ProfileEditor.tsx`): bijnaam, leeftijd, 4 helden met live
+  voorbeeld, pak- en accentkleuren (🔒 met het aantal sterren dat nodig is), en wissen (met
+  bevestiging).
+- **Wereldkaart** (`WorldMap.tsx`): 9 etappes op een kronkelpad de berg op, met het Oog op de top.
+  Het afgelegde pad gloeit in jade. Per etappe de naam en ☆/★ (of 🔒 + type), en de held staat bij
+  de huidige etappe (pulserende knop). Bovenaan staan de ninja (tik = aanpassen), "Andere ninja" en
+  "Kalibreren". Een melding bij een nieuwe etappe of kleur.
+- **Beurten:** een ninja kiezen is een nieuwe beurt, met opnieuw lichaam kalibreren (de lege kamer
+  blijft geleerd, dus enkel "ga in de schaduw-ninja staan") en opnieuw opwarmen.
+- **Opwarming** (`src/game/stages/warmUp.ts`, #47): 20 s rustig lopen, 15 s armen zwaaien, 3 rustige
+  hurken (max. 25 s). Zelfde spelscherm, geen resultaatscherm. Voor de eerste etappe van elke beurt.
+- **Rustscherm** (`RestScreen.tsx`, #47): na elke etappe 30 s (45 s na Bridge Sprint, Shadow
+  Strike en de finale), met een aftelring en "Drink een slokje water". Niet over te slaan, enkel
+  korter met "korte etappes".
+- **Startscherm:** één grote knop "Spelen", geluidsknoppen, en een uitklapbaar menu "Voor
+  begeleiders" (#55).
+
+**Bestanden:** `src/game/{profiles.ts,profiles.test.ts}`, `src/game/stages/{warmUp.ts,warmUp.test.ts}`,
+`src/app/{App,ProfileSelect,ProfileEditor,WorldMap,RestScreen,HeroPortrait}.tsx`,
+`src/app/profileStore.ts`, aanpassingen in `StageScreen.tsx` (`onResult`, `skipResult`),
+`catalog.ts` (opwarming), `types.ts`, `demo.ts`, `render/stages/index.ts`, `styles.css`,
+`scripts/e2e-scenarios.mjs` (scenario `reis`).
+
+**Getest:**
+- 9 unit tests: profielen maken en bewaren, naam/leeftijd begrenzen, één voor één openen, beste
+  resultaat zonder dubbele sterren, kleuren gaan open met sterren, scorebord, kapotte opslag.
+  Opwarming: verloop, en einde ook zonder hurken.
+- **E2E `reis`** (demomodus): nieuwe ninja (Neko) → kaart (8 op slot) → opwarming → Bridge Sprint
+  → resultaat → rust → kaart, met screenshots (ook staand). E2E `bridge` (met camera) opnieuw groen.
+- **Op het toestel: nog niet getest.** Kristof: speel een sessie met 2 kinderen om de beurt. Is
+  het beurtwissel-verloop duidelijk? Is de rust (30–45 s) goed? Snappen kinderen de kaart?
+
+**Problemen en oplossingen:**
+- Het pictogram van de app (`icon.svg`) wordt soms pas later door de browser geladen. De e2e-controle
+  "geen netwerk tijdens het spelen" laat eigen statische bestanden toe; de app zelf maakt nog
+  steeds geen verbinding (de CSP-test blijft groen).
+
+**Les voor B-world:** `ProfileBook` werkt met een opslag-interface (`load`/`save`). In B-world kan
+die vervangen worden door de bestaande opslag van B-world, zonder de logica te veranderen.

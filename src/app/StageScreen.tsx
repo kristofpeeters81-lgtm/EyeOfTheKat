@@ -27,9 +27,13 @@ export interface StageScreenProps {
   onEvent?: (e: StageEvent) => void;
   onExit: (result: StageResult | null) => void;
   onNext?: (result: StageResult) => void;
+  /** Wordt één keer per poging opgeroepen zodra de etappe uitgespeeld is (opslaan, #29). */
+  onResult?: (result: StageResult) => void;
+  /** Geen resultaatscherm (opwarming): meteen `onExit` na afloop. */
+  skipResult?: boolean;
 }
 
-export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, onExit, onNext }: StageScreenProps) {
+export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, onExit, onNext, onResult, skipResult }: StageScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<Stage | null>(null);
   const [hud, setHud] = useState<HudInfo | null>(null);
@@ -39,6 +43,10 @@ export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, 
   const [attempt, setAttempt] = useState(0);
   const eventRef = useRef(onEvent);
   eventRef.current = onEvent;
+  const resultRef = useRef(onResult);
+  resultRef.current = onResult;
+  const exitRef = useRef(onExit);
+  exitRef.current = onExit;
   const info = stageInfo(stageId);
   useStageAudioCleanup();
 
@@ -57,7 +65,11 @@ export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, 
         handleStageEvent(e);
         eventRef.current?.(e);
         if (e.type === 'say') setSubtitle(e.text);
-        if (e.type === 'done') window.setTimeout(() => setResult(stage.result()), 1800);
+        if (e.type === 'done') {
+          const r = stage.result();
+          resultRef.current?.(r);
+          window.setTimeout(() => (skipResult ? exitRef.current(r) : setResult(r)), 1800);
+        }
       }
       lastPower = { p: input.power, zone: input.zone };
     };
@@ -99,7 +111,7 @@ export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, 
       vision.setListener(null);
       audio.stopAll();
     };
-  }, [stageId, age, look, durationScale, demo, attempt]);
+  }, [stageId, age, look, durationScale, demo, attempt, skipResult]);
 
   if (!stageRef.current && !result) {
     return (

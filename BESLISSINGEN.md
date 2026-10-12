@@ -64,3 +64,5 @@ nieuw nummer; de oude krijgt status `vervangen door #x` en blijft staan.
 | 51 | 2026-10-11 | Stijl "Night Summit": nachtelijke bergen, ninja's als donker silhouet met lichtrand in de accentkleur; helden Kage, Riku, Mei, Neko | voorlopig |
 | 52 | 2026-10-12 | Demomodus: een bot speelt de etappes zonder camera (`?demo=1` of vinkje bij de etappes), om te bekijken en voor screenshots | voorlopig |
 | 53 | 2026-10-12 | Aankomende obstakels zijn altijd ±2,3 s op voorhand zichtbaar (snelheid volgt de schermbreedte) | voorlopig |
+| 54 | 2026-10-12 | Sterren ontgrendelen kleuren (accent bij 3/6/9/12 ★, pak bij 15/18/21 ★); de bonus-etappe uit #25 wordt uitgesteld | voorlopig |
+| 55 | 2026-10-12 | Startscherm: één grote knop "Spelen"; testschermen en -opties onder "Voor begeleiders"; demo slaat geen voortgang op | voorlopig |
