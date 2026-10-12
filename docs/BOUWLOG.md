@@ -469,3 +469,54 @@ module worden, met per game enkel andere muziek (`music.ts`) en een andere effec
 
 **Les voor B-world:** `SetStage` en `TimedObstacleStage` maken een nieuwe etappe klein (± 60 regels
 spellogica). De bot in `demo.ts` is handig voor elke game: als "attract mode" en voor tests.
+
+## Blok 9 — Etappes B: Shadow Wall, Shadow Strike, Wall Climb, The Eye  (2026-10-12 → wacht op test door Kristof)
+
+**Doel:** de laatste vier etappes, waaronder de finale. Daarmee zijn alle 9 etappes speelbaar.
+
+**Gebouwd:**
+- **Shadow Wall** (statische kracht): 4 muren (hurkzit, ster, armen omhoog, hurkzit). Elke houding
+  15 s vasthouden (9 s voor 6-jarigen), met 10 s rust ertussen. Vasthouden telt enkel als de
+  houding klopt **en** de Ninja Power ≤ 45 is (stilstaan). Ten laatste na vasthoudtijd + 8 s breekt
+  de muur (`auto`). Geen intensiteitseis voor ★★★ (#45).
+  *Tekening:* de muur staat **vóór** de held en heeft een gat met een jade rand, in de vorm van de
+  houding, precies op de plek van de held. Klopt je houding, dan zie je de held door het gat; zo
+  niet, dan bedekt de muur een deel van hem. De muur wordt groter en minder doorzichtig naarmate
+  ze nadert. Onder de held vult een balk zich tijdens het vasthouden (jade = houding klopt).
+- **Shadow Strike** (cardio): 4 rondes × 9 schaduwdoelen (links, rechts, boven, in een vaste
+  gemengde volgorde), 20 s rust. Een doel blijft 1,5 s staan (langer voor jongere kinderen), met
+  een aftelring. Een slag naar de verkeerde kant telt niet. In de bandjes-modus moet de hand zelf in
+  het doelvlak (#40).
+- **Wall Climb** (kracht): 3 klimmen × 12 grepen, en enkel de juiste kant telt (afwisselend
+  links/rechts). De wand schuift mee naar onder, en de volgende greep licht op. Vangnet na 8 s.
+  Bandjes-modus: de hand zelf moet boven het hoofd komen (#40).
+- **The Eye** (finale, continu): sprint 15 s → 5 stammen → 5 balken → sprint 15 s → 8 gemengd →
+  sprint 12 s → 12 gemengd (sneller) → **"Reik naar het Oog"**: armen omhoog vasthouden (4 s). Dan
+  gaat het Oog open met een lichtbundel naar de held. ±2 min voor 12 jaar. Sprintseconden,
+  obstakels en het slot tellen allemaal mee voor de sterren.
+- Een pose "armen omhoog" in zijaanzicht voor de held (finale).
+- De demobot (#52) kan nu alle 9 etappes spelen.
+
+**Bestanden:** `src/game/stages/{shadowWall,shadowStrike,wallClimb,theEye}.ts` (+ `stagesB.test.ts`),
+`src/render/stages/setB.ts`, stam en balk herbruikbaar gemaakt in `setA.ts`, aanpassingen in
+`catalog.ts`, `render/stages/index.ts` (tekenen vóór en na de held), `demo.ts`, `hero.ts`,
+`stageBase.ts` (`clockMs`).
+
+**Getest:**
+- 10 unit tests: Shadow Wall (4/4 en 3 sterren bij vasthouden; wiebelen telt niet; korter voor
+  6-jarigen), Shadow Strike (verkeerde kant telt niet; perfect = alles + 3 sterren), Wall Climb
+  (enkel afwisselend; vangnet), The Eye (opbouw, perfect gespeeld met het Oog open en 3 sterren;
+  niets doen = toch uitgespeeld met 1 ster).
+- E2E `demo` voor de 4 etappes, met screenshots liggend en staand. Daarop gezien en verbeterd:
+  het gat in de Shadow Wall was onzichtbaar (de held stond ervoor), en de rotsstructuur van de
+  klimwand vormde een vreemd patroon.
+- **Op het toestel: nog niet getest.** Kristof: herkent de app je hurkzit, ster en armen omhoog
+  (Shadow Wall)? Zijn slagen naar boven haalbaar voor kleinere kinderen? Klimmen met en zonder
+  bandjes vergelijken.
+
+**Problemen en oplossingen:**
+- Finale: de laatste seconde van elke sprint werd niet geteld (60/63). Nu telt een halve laatste
+  seconde mee, zoals bij Bridge Sprint.
+
+**Les voor B-world:** tekenen in twee lagen (vóór en na de held) maakt "door een gat passen"
+mogelijk zonder echte 3D. Nuttig voor meer games in die stijl.

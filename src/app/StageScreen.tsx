@@ -84,9 +84,9 @@ export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, 
     const stopLoop = startLoop((t, dt) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const { w, h } = fitCanvas(canvas);
+      const { w, h, dpr } = fitCanvas(canvas);
       const ctx = canvas.getContext('2d');
-      if (ctx) renderer.draw(ctx, w, h, stage, t, dt);
+      if (ctx) renderer.draw(ctx, w, h, stage, t, dt, dpr);
     });
     const id = window.setInterval(() => {
       setHud(stage.hud());

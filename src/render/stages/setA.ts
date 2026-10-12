@@ -16,7 +16,7 @@ import type { SceneLayout } from './layout';
 export const LEAD_MS = 2300;
 
 /** Snelheid van aankomende obstakels in pixels per ms: ze komen rechts in beeld, LEAD_MS vóór aankomst. */
-function obstacleSpeed(L: SceneLayout): number {
+export function obstacleSpeed(L: SceneLayout): number {
   return (L.w - L.heroX) / LEAD_MS;
 }
 
@@ -29,7 +29,7 @@ export function scrollFor(L: SceneLayout, stage: TimedObstacleStage): number {
   return stage.isActive ? stage.setClock * obstacleSpeed(L) : 0;
 }
 
-function sparkle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, t: number): void {
+export function sparkle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, t: number): void {
   ctx.save();
   ctx.strokeStyle = PALETTE.jade;
   ctx.lineWidth = 3;
@@ -44,6 +44,40 @@ function sparkle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number,
   ctx.restore();
 }
 
+/** Eén rollende stam met de onderkant op `groundY`. */
+export function drawLogAt(ctx: CanvasRenderingContext2D, L: SceneLayout, x: number, groundY: number): void {
+  const r = L.heroSize * 0.13;
+  const y = groundY - r;
+  const rot = -x / r;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(0, r * 0.95, r, r * 0.18, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.rotate(rot);
+  ctx.fillStyle = PALETTE.woodDark;
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#c99a6b';
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = PALETTE.wood;
+  ctx.lineWidth = Math.max(1.5, r * 0.07);
+  for (const k of [0.55, 0.32]) {
+    ctx.beginPath();
+    ctx.arc(0, 0, r * k, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.7, 0);
+  ctx.lineTo(r * 0.7, 0);
+  ctx.stroke();
+  ctx.restore();
+}
+
 export function drawLogRoll(ctx: CanvasRenderingContext2D, L: SceneLayout, stage: LogRoll, scroll: number, t: number): void {
   drawGround(ctx, L.w, L.h, L.groundY, scroll, 'stone');
   if (!stage.isActive) return;
@@ -51,72 +85,50 @@ export function drawLogRoll(ctx: CanvasRenderingContext2D, L: SceneLayout, stage
   for (const o of stage.obstacles) {
     const x = obstacleX(L, stage, o.at);
     if (x < -r * 2 || x > L.w + r * 2) continue;
-    const y = L.groundY - r;
-    const rot = -x / r;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(0, r * 0.95, r, r * 0.18, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.rotate(rot);
-    ctx.fillStyle = PALETTE.woodDark;
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#c99a6b';
-    ctx.beginPath();
-    ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = PALETTE.wood;
-    ctx.lineWidth = Math.max(1.5, r * 0.07);
-    for (const k of [0.55, 0.32]) {
-      ctx.beginPath();
-      ctx.arc(0, 0, r * k, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.beginPath();
-    ctx.moveTo(-r * 0.7, 0);
-    ctx.lineTo(r * 0.7, 0);
-    ctx.stroke();
-    ctx.restore();
-    if (o.result === 'detected' && x < L.heroX && x > L.heroX - L.heroSize) sparkle(ctx, x, y - r * 1.4, r, t);
+    drawLogAt(ctx, L, x, L.groundY);
+    if (o.result === 'detected' && x < L.heroX && x > L.heroX - L.heroSize) sparkle(ctx, x, L.groundY - r * 2.4, r, t);
   }
+}
+
+/** Eén balk aan touwen op hoofdhoogte. */
+export function drawBeamAt(ctx: CanvasRenderingContext2D, L: SceneLayout, x: number, groundY: number, t: number, seed: number): number {
+  const len = L.heroSize * 0.55;
+  const thick = L.heroSize * 0.11;
+  const beamY = groundY - L.heroSize * 0.74;
+  const swing = Math.sin(t * 3 + seed) * 0.08;
+  ctx.strokeStyle = PALETTE.woodDark;
+  ctx.lineWidth = Math.max(2, thick * 0.18);
+  ctx.beginPath();
+  ctx.moveTo(x - len * 0.35, 0);
+  ctx.lineTo(x - len * 0.35 + swing * L.heroSize, beamY);
+  ctx.moveTo(x + len * 0.35, 0);
+  ctx.lineTo(x + len * 0.35 + swing * L.heroSize, beamY);
+  ctx.stroke();
+  ctx.save();
+  ctx.translate(x + swing * L.heroSize, beamY);
+  ctx.rotate(swing * 0.5);
+  ctx.fillStyle = PALETTE.wood;
+  ctx.beginPath();
+  ctx.roundRect(-len / 2, -thick / 2, len, thick, thick / 2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.fillRect(-len / 2 + thick / 2, -thick / 2, len - thick, thick * 0.25);
+  // Waarschuwingsstreep (rood)
+  ctx.fillStyle = PALETTE.danger;
+  for (let k = -2; k <= 2; k++) ctx.fillRect(k * len * 0.18 - thick * 0.15, -thick / 2, thick * 0.3, thick);
+  ctx.restore();
+  return beamY;
 }
 
 export function drawDuckBeams(ctx: CanvasRenderingContext2D, L: SceneLayout, stage: DuckBeams, scroll: number, t: number): void {
   drawGround(ctx, L.w, L.h, L.groundY, scroll, 'wood');
   if (!stage.isActive) return;
   const len = L.heroSize * 0.55;
-  const thick = L.heroSize * 0.11;
-  const beamY = L.groundY - L.heroSize * 0.74;
   for (const o of stage.obstacles) {
     const x = obstacleX(L, stage, o.at);
     if (x < -len || x > L.w + len) continue;
-    const swing = Math.sin(t * 3 + o.at) * 0.08;
-    // Touwen naar boven
-    ctx.strokeStyle = PALETTE.woodDark;
-    ctx.lineWidth = Math.max(2, thick * 0.18);
-    ctx.beginPath();
-    ctx.moveTo(x - len * 0.35, 0);
-    ctx.lineTo(x - len * 0.35 + swing * L.heroSize, beamY);
-    ctx.moveTo(x + len * 0.35, 0);
-    ctx.lineTo(x + len * 0.35 + swing * L.heroSize, beamY);
-    ctx.stroke();
-    ctx.save();
-    ctx.translate(x + swing * L.heroSize, beamY);
-    ctx.rotate(swing * 0.5);
-    ctx.fillStyle = PALETTE.wood;
-    ctx.beginPath();
-    ctx.roundRect(-len / 2, -thick / 2, len, thick, thick / 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(-len / 2 + thick / 2, -thick / 2, len - thick, thick * 0.25);
-    // Waarschuwingsstreep (rood/wit)
-    ctx.fillStyle = PALETTE.danger;
-    for (let k = -2; k <= 2; k++) ctx.fillRect(k * len * 0.18 - thick * 0.15, -thick / 2, thick * 0.3, thick);
-    ctx.restore();
-    if (o.result === 'detected' && x < L.heroX && x > L.heroX - L.heroSize) sparkle(ctx, x, beamY, thick * 2, t);
+    const beamY = drawBeamAt(ctx, L, x, L.groundY, t, o.at);
+    if (o.result === 'detected' && x < L.heroX && x > L.heroX - L.heroSize) sparkle(ctx, x, beamY, L.heroSize * 0.22, t);
   }
 }
 

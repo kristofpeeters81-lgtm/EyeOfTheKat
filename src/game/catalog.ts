@@ -2,6 +2,10 @@ import { BridgeSprint } from './stages/bridgeSprint';
 import { DuckBeams } from './stages/duckBeams';
 import { FrogLeap } from './stages/frogLeap';
 import { LogRoll } from './stages/logRoll';
+import { ShadowStrike } from './stages/shadowStrike';
+import { ShadowWall } from './stages/shadowWall';
+import { TheEye } from './stages/theEye';
+import { WallClimb } from './stages/wallClimb';
 import { StoneHop } from './stages/stoneHop';
 import type { Stage, StageId, StageSettings } from './types';
 
@@ -31,10 +35,10 @@ export const STAGES: StageInfo[] = [
   { id: 'log-roll', name: 'Log Roll', dutch: 'Rollende stammen', blurb: 'Spring over de rollende boomstammen.', type: 'cardio', move: 'Springen', restAfterMs: 30000, create: (s) => new LogRoll(s) },
   { id: 'frog-leap', name: 'Frog Leap', dutch: 'Kikkersprongen', blurb: 'Diep hurken en omhoog springen naar het volgende platform.', type: 'kracht', move: 'Hurken + springen', restAfterMs: 30000, create: (s) => new FrogLeap(s) },
   { id: 'stone-hop', name: 'Stone Hop', dutch: 'Springstenen', blurb: 'Hop links en rechts over de stenen in de rivier.', type: 'cardio', move: 'Zijwaarts springen', restAfterMs: 30000, create: (s) => new StoneHop(s) },
-  { id: 'shadow-wall', name: 'Shadow Wall', dutch: 'Schaduwmuur', blurb: 'Pas in het gat van de naderende muur en hou vast.', type: 'kracht', move: 'Houding vasthouden', restAfterMs: 30000 },
-  { id: 'shadow-strike', name: 'Shadow Strike', dutch: 'Ninja-slagen', blurb: 'Sla de schaduwdoelen links, rechts en boven.', type: 'cardio', move: 'Slaan', restAfterMs: 45000 },
-  { id: 'wall-climb', name: 'Wall Climb', dutch: 'Muurklim', blurb: 'Klim de muur op: om beurt je armen omhoog.', type: 'kracht', move: 'Afwisselend reiken + knie', restAfterMs: 30000 },
-  { id: 'the-eye', name: 'The Eye', dutch: 'Finale', blurb: 'De laatste klim naar het Oog van de Kat.', type: 'finale', move: 'Alles door elkaar', restAfterMs: 45000 },
+  { id: 'shadow-wall', name: 'Shadow Wall', dutch: 'Schaduwmuur', blurb: 'Pas in het gat van de naderende muur en hou vast.', type: 'kracht', move: 'Houding vasthouden', restAfterMs: 30000, create: (s) => new ShadowWall(s) },
+  { id: 'shadow-strike', name: 'Shadow Strike', dutch: 'Ninja-slagen', blurb: 'Sla de schaduwdoelen links, rechts en boven.', type: 'cardio', move: 'Slaan', restAfterMs: 45000, create: (s) => new ShadowStrike(s) },
+  { id: 'wall-climb', name: 'Wall Climb', dutch: 'Muurklim', blurb: 'Klim de muur op: om beurt je armen omhoog.', type: 'kracht', move: 'Afwisselend reiken + knie', restAfterMs: 30000, create: (s) => new WallClimb(s) },
+  { id: 'the-eye', name: 'The Eye', dutch: 'Finale', blurb: 'De laatste klim naar het Oog van de Kat.', type: 'finale', move: 'Alles door elkaar', restAfterMs: 45000, create: (s) => new TheEye(s) },
 ];
 
 export function stageInfo(id: StageId): StageInfo {

@@ -172,6 +172,11 @@ export abstract class StageBase implements Stage {
 
   // --- hulpfuncties voor de etappes ---
 
+  /** Spelklok (ms), voor tekeningen. */
+  get clockMs(): number {
+    return this.clock;
+  }
+
   protected get isPaused(): boolean {
     return this.paused;
   }

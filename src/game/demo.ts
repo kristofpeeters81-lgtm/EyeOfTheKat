@@ -2,6 +2,10 @@ import type { MoveEvent } from '../vision/moves';
 import { BridgeSprint } from './stages/bridgeSprint';
 import { FrogLeap } from './stages/frogLeap';
 import { LogRoll } from './stages/logRoll';
+import { ShadowStrike } from './stages/shadowStrike';
+import { ShadowWall } from './stages/shadowWall';
+import { TheEye } from './stages/theEye';
+import { WallClimb } from './stages/wallClimb';
 import { StoneHop } from './stages/stoneHop';
 import { TimedObstacleStage } from './stages/timed';
 import { idleState } from './testing';
@@ -17,6 +21,7 @@ export class DemoBot {
   private lane: -1 | 0 | 1 = 0;
   private lastLeap = 0;
   private jumpUntil = -1;
+  private lastReach = 0;
 
   input(stage: Stage, dt: number): GameInput {
     this.t += dt;
@@ -49,6 +54,31 @@ export class DemoBot {
         this.lastLeap = this.t;
       }
       power = 60;
+    } else if (stage instanceof ShadowWall && stage.isActiveSet) {
+      // Na 1,5 s de houding aannemen en stil houden.
+      if (stage.wallProgress > 0.12 || stage.held > 0) state.poses[stage.pose] = true;
+      power = 12;
+    } else if (stage instanceof ShadowStrike && stage.isActiveSet) {
+      if (stage.target && stage.targetLeft < 0.65) events.push({ type: 'strike', t: this.t, zone: stage.target });
+      power = 62;
+    } else if (stage instanceof WallClimb && stage.isActiveSet) {
+      if (this.t - this.lastReach > 1000) {
+        events.push({ type: 'reach', t: this.t, side: stage.next });
+        this.lastReach = this.t;
+      }
+      power = 50;
+    } else if (stage instanceof TheEye && stage.hud().phase === 'active') {
+      const next = stage.obstacles.find((o) => o.result === 'pending');
+      const until = next ? next.at - stage.run : Infinity;
+      if (next?.kind === 'log' && until < 260 && until > 0 && this.t > this.jumpUntil) {
+        events.push({ type: 'jump', t: this.t });
+        this.jumpUntil = this.t + 500;
+      }
+      state.airborne = this.t < this.jumpUntil;
+      state.low = next?.kind === 'beam' && until < 450 && until > -250;
+      if (stage.inFinal) state.poses['arms-up'] = true;
+      legPower = stage.inSprint ? 66 : 20;
+      power = 58;
     } else if (stage instanceof StoneHop && stage.isActiveSet) {
       if (!stage.waiting && this.lane !== stage.target && Math.floor(this.t / 600) % 2 === 0) {
         this.lane = stage.target;
