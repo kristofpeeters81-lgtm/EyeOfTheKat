@@ -13,10 +13,12 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 ## Huidige stand
 
 - ✅ **Interview** afgerond: 10 vraagrondes, beslissingen #1–#40
-- ✅ Voorstellen van Claude vastgelegd als `voorlopig`: #41–#48
-- ✅ Documentatiestructuur opgezet
-- 🔨 Bouwen volgens de blokken hieronder (#49)
-- 🧪 Blok 1–11 gebouwd (alle 9 etappes, profielen, kaart, opwarming, rust, meetgegevens + export) en automatisch getest (unit + e2e), live op https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/
+- ✅ Voorstellen van Claude vastgelegd als `voorlopig`: #41–#48, #50–#55
+- 🧪 **Alle 12 blokken gebouwd** en automatisch getest (93 unit tests, 8 e2e-scenario's), live op
+  https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/ (2026-10-12). Kristof gaf groen licht om
+  zonder tussentijdse tests door te bouwen (#49).
+- ⏭️ **Volgende stap: toesteltests** volgens [`docs/TESTPROTOCOL.md`](docs/TESTPROTOCOL.md), daarna
+  de drempels en voorlopige beslissingen bijsturen, en go/no-go voor B-world.
 
 ## Bouwblokken
 
@@ -24,7 +26,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 |---|---|---|---|
 | 1 | **Fundament**: projectopzet (React + Vite + TS, #27), publieke repo + GitHub Pages (#36), PWA/offline, CSP `connect-src 'none'` (#4), privacycontrole (#48), camera, klein analysecanvas (#46), fps-balkje + debugpaneel (#39), liggend/staand (#11) | Link openen op gsm, oude tablet, laptop: start de camera, hoeveel fps? | 🧪 |
 | 2 | **Silhouetmotor**: achtergrondmodel met schaduwonderdrukking, kalibratie "stap opzij 3-2-1" (#30), silhouetkenmerken, ruimte-check, uit beeld / tweede persoon (#26), Ninja Power (#44) + tests met synthetische beelden | Kalibreren in je eigen ruimte: staat het masker stabiel? Liggend en staand | 🧪 |
-| 3 | **Detectoren + Testlab**: sprong, hurk, zijstap, slag per zone, houding vasthouden, kikkersprong, sprint-intensiteit; Testlab-scherm met tellers; tests op synthetische en Commons-filmpjes (#32) | In het Testlab elke beweging 10× doen: klopt de teller? | 🧪 |
+| 3 | **Detectoren + Testlab**: sprong, hurk, zijstap, slag per zone, houding vasthouden, kikkersprong, sprint-intensiteit; Testlab-scherm met tellers; tests op synthetische beelden en een synthetisch testfilmpje (#32, #50) | In het Testlab elke beweging 10× doen: klopt de teller? | 🧪 |
 | 4 | **Kleurbandjes-motor** (#18, #33, #40): kleurkalibratie, 2 markers volgen, controle op storende kleur | Met 2 felle sokken om de polsen: volgt de app je handen? | 🧪 |
 | 5 | **Stijl, held en wereld** (#23, #24, #35, #38): stijlvoorbeeld, 4 helden met kleurkeuze, de Geest, de berg met het Oog | Stijl bekijken: goedkeuren of bijsturen | 🧪 |
 | 6 | **Etappemotor + eerste etappe**: Bridge Sprint end-to-end, met vangnetten (#31), sterren (#45) en resultaatscherm | Bridge Sprint volledig spelen | 🧪 |
@@ -33,12 +35,15 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 | 9 | **Etappes B**: Shadow Wall, Shadow Strike, Wall Climb, The Eye (finale) | Elke etappe spelen, ook in de bandjes-modus | 🧪 |
 | 10 | **Spelverloop**: profielen (#19), held kiezen (#24), wereldkaart (#42), opwarming en rust (#47), ontgrendelen, scorebord | Een volledige sessie met 2 kinderen om de beurt | 🧪 |
 | 11 | **Opslag en extra's**: export CSV/JSON (#29), korte evaluatie na de sessie (#28), iOS-voorzieningen (ongetest, #22) | Export openen in Excel | 🧪 |
-| 12 | **Herbouwgids B-world** (#14) afwerken + eindevaluatie van de testdoelen (#28) | Gids nalezen, go/no-go voor B-world | ⏳ |
+| 12 | **Herbouwgids B-world** (#14) afwerken + eindevaluatie van de testdoelen (#28) | Gids nalezen, go/no-go voor B-world | 🧪 |
 
 ## Open punten
 
 - Alle `voorlopige` beslissingen (#41–#48, #50–#55) en de stijl (blok 5) moeten nog door Kristof bekeken worden.
-- Testmomenten op het toestel van alle blokken (#49).
+- Testmomenten op het toestel van alle blokken (#49): zie `docs/TESTPROTOCOL.md`.
+- Bonus-etappe (#25) uitgesteld (#54).
+- iOS ongetest (#22).
+- Idee (nog niet gebouwd): camera uitzetten op het startscherm (privacy/batterij); nu blijft ze aan zolang de app open is.
 
 ## Risico's
 

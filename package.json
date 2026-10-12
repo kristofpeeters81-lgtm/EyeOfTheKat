@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node scripts/check-privacy.mjs && vitest run",
     "e2e": "node scripts/e2e.mjs",
-    "testvideo": "node scripts/make-test-video.mjs"
+    "testvideo": "node scripts/make-test-video.mjs",
+    "e2e:all": "node scripts/e2e-all.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

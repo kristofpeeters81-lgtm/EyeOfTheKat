@@ -1,13 +1,40 @@
 # The Eye of the Kat → B-world: herbouwgids
 
-> **Status:** skelet. Wordt na elk blok aangevuld en in het laatste blok afgewerkt.
+> **Status:** afgewerkt na blok 12 (2026-10-12). De app is volledig gebouwd en automatisch getest,
+> maar **nog niet getest op echte toestellen met kinderen**. Drempels en tijden kunnen na die tests
+> nog veranderen; die wijzigingen komen als nieuwe beslissingen in `BESLISSINGEN.md`.
 > **Doel (#14):** als de test goed bevonden wordt, gaat de app op dezelfde manier naar B-world
 > als Idol Academy. Deze gids is geschreven voor wie (mens of AI-tool) dat doet, op een ander
 > toestel en zonder toegang tot deze conversatie.
 
 ## 1. Overzicht: overnemen of opnieuw bouwen
-*(Laatste blok)* Een tabel per onderdeel: letterlijk overnemen (detectiemotor, spellogica,
-tests) · logica overnemen met nieuwe visuals (etappes, held) · opnieuw bouwen (app-schil, menu's).
+
+| Onderdeel | Map / bestanden | Wat doen in B-world | Waarom |
+|---|---|---|---|
+| Detectiemotor (silhouet, beweging, Ninja Power, aanwezigheid) | `src/vision/` | **Letterlijk overnemen** + tests | Puur TS, geen DOM/React, geen afhankelijkheden; het hart van de test |
+| Bewegingsdetectoren | `src/vision/moves.ts` | **Letterlijk overnemen** + tests | Games kennen enkel `MoveEvent`s |
+| Kleurbandjes | `src/vision/color.ts`, `src/runtime/bandFlow.ts` | **Letterlijk overnemen** (optioneel) | Opt-in precisie (#40) |
+| Kalibratieverloop | `src/runtime/calibrationFlow.ts` | **Overnemen**, scherm opnieuw | Toestandsmachine zonder UI |
+| Camera + beeldlus | `src/camera/`, `src/runtime/session.ts` | **Overnemen** (of B-world-camera gebruiken) | Klein en getest |
+| Etappes + spellogica | `src/game/` (`stageBase`, `setStage`, `stages/*`, `scaling`, `catalog`) | **Letterlijk overnemen** + tests | Puur TS; leeftijd, sterren, vangnetten |
+| Profielen + logboek | `src/game/profiles.ts`, `src/game/sessionLog.ts` | **Logica overnemen**, opslag koppelen aan B-world | Opslag zit achter een interface |
+| Demobot | `src/game/demo.ts` | **Overnemen** | Tests, screenshots, "attract mode" |
+| Held: skelet + poses | `src/render/hero.ts` (`targetPose`, `HeroAnimator`) | **Overnemen** | Stijlonafhankelijk |
+| Held: tekenen, wereld, scènes | `src/render/hero.ts` (`drawHero`), `world.ts`, `stages/*.ts` | **Visuals naar B-world-stijl** (of overnemen) | Puur Canvas2D, geen afbeeldingen |
+| Geluid | `src/audio/` | **Delen met Idol Academy** (één module) | Zelfde motor, enkel muziek/effecten anders |
+| Schermen (HUD, kaart, profielen, resultaat, rust, testlab, meetgegevens) | `src/app/*.tsx` | **Opnieuw bouwen** in B-world | Dunne React-laag, B-world heeft eigen UI |
+| Privacycontrole | `scripts/check-privacy.mjs` | **Overnemen** in de B-world-build | Bewijst "geen AI, geen netwerk" |
+| Testfilmpje + e2e | `scripts/make-test-video.mjs`, `scripts/e2e*.mjs` | **Overnemen** | Synthetisch filmpje, geen echte beelden |
+
+### Stappenplan voor de herbouw
+1. `src/vision/` + tests overnemen → `npm test` groen in B-world.
+2. Camera + beeldlus + kalibratieverloop → een eenvoudig kalibratiescherm in B-world-stijl.
+3. Het Testlab (of een eenvoudige versie) als verborgen begeleidersscherm, om de detectie op
+   B-world-toestellen te controleren.
+4. `src/game/` + tests overnemen → één etappe (bv. Bridge Sprint) met een B-world-HUD.
+5. De overige etappes, de held en de wereld (eigen stijl of overgenomen).
+6. Profielen/logboek koppelen aan de B-world-opslag, geluid via de gedeelde module.
+7. Privacycontrole in de B-world-build, en de CSP-keuze uit §2.
 
 ## 2. Vereisten in B-world *(blok 1, ingevuld)*
 
@@ -119,8 +146,33 @@ stemmen (`pickVoice`).
 - **Opnieuw bouwen in B-world-stijl:** `ProfileSelect`, `ProfileEditor`, `WorldMap`, `RestScreen` en
   het verloop in `App.tsx` (een eenvoudige toestandsmachine met schermen).
 
-### 6.3 Opslag en export *(blok 11)*
+### 6.3 Opslag en export *(blok 11, ingevuld)*
+**Letterlijk overnemen:** `src/game/sessionLog.ts` (logboek + CSV). App-laag: `src/app/logStore.ts`
+(localStorage + download) en `DataScreen.tsx` (begeleidersscherm, opnieuw te bouwen). Het
+CSV-formaat (28 kolommen, `;`, decimale komma, BOM) is gemaakt voor Excel met Belgische instellingen.
 
 ## 7. Observaties naast Idol Academy
-*(Laatste blok)* Geen formeel vergelijkend rapport (#28), enkel korte observaties die helpen
-kiezen tussen beide aanpakken in B-world.
+
+Geen formeel vergelijkend rapport (#28), enkel wat al zichtbaar is uit de bouw. Wat de
+toesteltests zeggen, wordt hier na de test aangevuld.
+
+| Punt | Idol Academy (MediaPipe, AI) | The Eye of the Kat (geen AI) |
+|---|---|---|
+| Grootte van de app | ±34 MB (modellen + WASM) | ±0,5 MB (enkel code en lettertypes) |
+| Netwerk | `connect-src 'self'` (model laden) | `connect-src 'none'`: technisch onmogelijk om iets te versturen |
+| Wat de app "ziet" | 33 lichaamspunten, gewrichtshoeken | silhouet (kader, zwaartepunt, hoogte/breedte), beweging, optioneel 2 handen via kleur |
+| Opstelling | kind mag direct starten | **lege kamer leren** (stap opzij) en een stilstaande camera; kalibratie per beurt |
+| Gevoeligheid | weinig last van achtergrond/licht | gevoelig voor bewegende achtergrond (tv, raam, voorbijlopers) en plotse lichtwissels; opgevangen met schaduwonderdrukking, belichtingscorrectie, langzame aanpassing en pauze bij "beeld veranderd" |
+| Uitlegbaarheid | model = zwarte doos | elke regel staat in de code met een drempel in lichaamslengtes |
+| Bewegingen | ook fijne houdingen (bv. één been, knie-hoek) | grote, duidelijke bewegingen: springen, hurken, opzij, armen boven/opzij, lopen, houding vasthouden |
+| Rekenkracht (verwachting) | zwaar op oude tablets (model) | licht: ± enkele ms per beeld op 160×120 (te bevestigen in de toesteltest) |
+
+**Voorlopige conclusie (vóór de toesteltest):** voor een parcours met grote bewegingen lijkt
+"zonder AI" haalbaar. De prijs is de opstelling: een stilstaande camera, een rustige achtergrond en
+een korte kalibratie per beurt. Waar fijne houdingen nodig zijn, blijft de AI-aanpak sterker. Voor
+B-world kan dus per game gekozen worden: AI waar het moet, zonder AI waar het kan.
+
+## 8. Wat nog open is
+- **Toesteltests** volgens `docs/TESTPROTOCOL.md` (alle blokken staan op 🧪 in `PLANNING.md`).
+- **Voorlopige beslissingen** #41–#48 en #50–#55 (o.a. de drempels, de stijl en de bonus-etappe).
+- iOS is voorzien maar ongetest (#22).

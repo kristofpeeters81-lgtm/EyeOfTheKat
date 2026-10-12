@@ -612,3 +612,34 @@ identificatie). De export is een download op het toestel zelf, dus geen netwerk 
 
 **Les voor B-world:** `SessionLog` + `toCsv` zijn los overneembaar. In B-world zou je de
 meetgegevens eerder naar de B-world-opslag schrijven, maar het formaat kan hetzelfde blijven.
+
+## Blok 12 — Herbouwgids, testprotocol en afronding  (2026-10-12 → wacht op de toesteltests)
+
+**Doel:** de app overdraagbaar maken: B-world moet hem kunnen herbouwen (#14), en Kristof moet hem
+gestructureerd kunnen testen (#28).
+
+**Gebouwd:**
+- **`docs/HERBOUW-BWORLD.md` afgewerkt:** een overzichtstabel per onderdeel (letterlijk overnemen,
+  logica overnemen met nieuwe visuals, of opnieuw bouwen), een stappenplan in 7 stappen, de
+  vereisten (CSP-keuze, camera, PWA), het gebruik van elke module met codevoorbeelden, observaties
+  naast Idol Academy (grootte 0,5 MB vs. 34 MB, `connect-src 'none'` vs. `'self'`, wat zonder AI
+  wel en niet kan), en wat nog open is.
+- **`docs/TESTPROTOCOL.md`:** een checklist voor de toesteltests met invultabellen: technische check
+  (fps per toestel en stand), kalibratie, Testlab (elke beweging 10×, volwassene en kind),
+  kleurbandjes, een echte sessie met 2 kinderen, de export, en wat terug te koppelen.
+- **`npm run e2e:all`** (`scripts/e2e-all.mjs`): alle 8 e2e-scenario's na elkaar, met een
+  samenvatting. Maakt het testfilmpje als het ontbreekt.
+- README (het spel, privacy, commando's) en CLAUDE.md (structuur, regels) bijgewerkt.
+
+**Eindstand van de automatische tests:**
+- 93 unit tests (vision, game, audio, profielen, logboek) + de privacycontrole op de broncode en
+  op de build.
+- 8 e2e-scenario's in headless Chrome met de gebouwde app en de CSP: camera, kalibratie, Testlab
+  (exacte tellingen), Bridge Sprint met camera, demo van alle 9 etappes, een volledige ronde
+  (reis), export, en stijl. Bij elk scenario: geen verzoeken naar buiten, geen netwerk tijdens het
+  spelen, de CSP blokkeert een fetch, en geen consolefouten.
+
+**Wat de tests NIET bewijzen:** dat de drempels kloppen voor echte kinderen in een echte kamer,
+op echte toestellen. Daarvoor is `docs/TESTPROTOCOL.md`.
+
+**Les voor B-world:** zie `docs/HERBOUW-BWORLD.md` §1 (tabel) en §7 (observaties).
