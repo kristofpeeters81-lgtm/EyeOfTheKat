@@ -285,3 +285,13 @@ button {
 .guide-menu { max-width: 640px; color: var(--muted); }
 .guide-menu summary { cursor: pointer; font-weight: 700; padding: 6px; }
 .guide-menu[open] { display: flex; flex-direction: column; gap: 10px; }
+
+/* Evaluatie (#28) en meetgegevens (#29) */
+.rating { display: flex; flex-direction: column; gap: 8px; }
+.rating span { font-weight: 700; min-width: 96px; }
+.rate-btn { font-size: 2rem; line-height: 1; padding: 4px 8px; border-radius: 14px; border: 2px solid transparent; filter: grayscale(0.6); }
+.rate-btn.on { border-color: var(--eye); filter: none; transform: scale(1.1); }
+.data-table { overflow: auto; }
+.data-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th, .data-table td { padding: 4px 8px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.data-table th { color: var(--muted); font-weight: 700; }

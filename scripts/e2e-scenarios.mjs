@@ -1,4 +1,5 @@
 // Scenario's voor scripts/e2e.mjs. Kies er één met de omgevingsvariabele E2E_SCENARIO.
+import fs from 'node:fs';
 import path from 'node:path';
 
 export const SCENARIOS = {
@@ -124,6 +125,37 @@ export const SCENARIOS = {
     await page.setViewport({ width: 600, height: 900 });
     await sleep(800);
     await page.screenshot({ path: path.join(OUT, 'reis-6-kaart-staand.png') });
+  },
+
+  /** Blok 11: meetgegevens exporteren naar CSV (download controleren). */
+  async export({ page, clickText, sleep, check, OUT }) {
+    const dir = path.join(OUT, 'downloads');
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const client = await page.createCDPSession();
+    await client.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: dir });
+    // Logboek vullen zoals na een echte etappe (getallen, geen beelden).
+    await page.evaluate(() => {
+      const result = { stageId: 'log-roll', stars: 2, score: 1500, total: 24, detected: 20, auto: 4, manual: 0, activeMs: 60000, highZoneMs: 30000, avgPower: 48, peakPower: 90, durationMs: 90000, pauses: 0, markerMode: false, age: 8 };
+      const tech = { appVersion: 'e2e', fps: 29.5, procMs: 4.2, camera: '640×480', analysis: '160×120', orientation: 'liggend', device: 'Windows' };
+      localStorage.setItem('eyeOfTheKat.log', JSON.stringify([{ at: new Date().toISOString(), profileId: 'p1', name: 'Zoë', result, tech, fun: 3, effort: 2 }]));
+    });
+    await page.reload({ waitUntil: 'networkidle0' });
+    await clickText(page, 'Meetgegevens');
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Meetgegevens'), { timeout: 5000 });
+    await page.screenshot({ path: path.join(OUT, 'meetgegevens.png') });
+    await clickText(page, 'Export CSV');
+    let file = null;
+    for (let i = 0; i < 40 && !file; i++) {
+      await sleep(250);
+      file = fs.readdirSync(dir).find((f) => f.endsWith('.csv'));
+    }
+    check(!!file, `CSV gedownload (${file})`);
+    if (file) {
+      const csv = fs.readFileSync(path.join(dir, file), 'utf8');
+      check(csv.startsWith('\uFEFFtijdstip;ninja;leeftijd;etappe'), 'CSV-kop klopt (met BOM voor Excel)');
+      check(csv.includes('Zoë;8;log-roll;2;1500;24;20;4;0;83'), 'rij met de juiste waarden (ë intact, 20/24 = 83%)');
+    }
   },
 
   /** Blok 5: stijlvoorbeeld (screenshots om te beoordelen). */

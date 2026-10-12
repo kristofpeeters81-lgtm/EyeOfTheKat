@@ -572,3 +572,43 @@ wereldkaart (#42), ontgrendelen (#25), opwarming en rust (#47) en een scorebord.
 
 **Les voor B-world:** `ProfileBook` werkt met een opslag-interface (`load`/`save`). In B-world kan
 die vervangen worden door de bestaande opslag van B-world, zonder de logica te veranderen.
+
+## Blok 11 — Meetgegevens, export, evaluatie, iOS  (2026-10-12 → wacht op test door Kristof)
+
+**Doel:** de testdoelen (#28) meetbaar maken: per gespeelde etappe de cijfers bewaren (#29),
+het kind laten zeggen hoe leuk en hoe zwaar het was, en alles kunnen exporteren.
+
+**Gebouwd:**
+- **Logboek** (`src/game/sessionLog.ts`, puur + `src/app/logStore.ts`): per gespeelde etappe het
+  tijdstip, de ninja (bijnaam), het volledige `StageResult` (sterren, score, opdrachten,
+  gezien/vanzelf/begeleider, actieve tijd, tijd hoog/piek, gem./piek-Power, duur, pauzes,
+  bandjes-modus, leeftijd) en technische info (app-versie, fps, ms per beeld, camera- en
+  analysegrootte, liggend/staand, en een grof toesteltype zoals "Android 14 Pixel 7"). Max. 1000
+  regels. Losse etappes (begeleider) worden gelogd als "losse etappe". De demo logt niets (#55).
+- **Evaluatie** op het resultaatscherm (#28): "Hoe leuk?" 🙁 🙂 🤩 en "Hoe zwaar?"
+  makkelijk/goed/zwaar, opgeslagen bij die regel.
+- **Scherm Meetgegevens** (begeleidersmenu): totalen (gespeelde etappes, ninja's, % gezien door
+  de camera, gemiddelde fps, gemiddelde "leuk"), de laatste 12 regels, en de knoppen **Export CSV
+  (Excel)**, **Export JSON (alles)** en wissen (met bevestiging).
+- **CSV voor Excel (BE):** `;` als scheiding, decimale komma, BOM voor UTF-8 (ë blijft ë), en
+  aanhalingstekens rond tekst met `;` of `"`. 28 kolommen (zie `CSV_COLUMNS`).
+- **JSON:** alle profielen + het volledige logboek + versie en exportdatum.
+- **iOS** (#22, ongetest): meta-tags voor schermvullend als app op het beginscherm. De camera had al
+  `playsinline`/`muted`, en het geluid wordt bij de eerste tik ontgrendeld (ook de spraak).
+
+**Bestanden:** `src/game/{sessionLog,sessionLog.test}.ts`, `src/app/{logStore.ts,DataScreen.tsx}`,
+aanpassingen in `ResultScreen.tsx`, `StageScreen.tsx`, `App.tsx`, `index.html`, `styles.css`,
+`scripts/e2e-scenarios.mjs` (scenario `export`), `scripts/e2e.mjs` (navigatie ≠ verbinding).
+
+**Getest:**
+- 4 unit tests: evaluatie bij de juiste regel, maximum 1000, kapotte opslag, CSV-opmaak
+  (kop, aanhalingstekens, percentages, decimale komma).
+- **E2E `export`:** logboek gevuld → scherm Meetgegevens → "Export CSV" → het gedownloade bestand
+  bestaat, begint met BOM + de juiste kop, en bevat "Zoë;8;log-roll;2;1500;24;20;4;0;83".
+- **Op het toestel: nog niet getest.** Kristof: exporteer na een testsessie en open de CSV in Excel.
+
+**Privacy:** het logboek bevat geen beelden, en het toesteltype is grof (merk/model, geen
+identificatie). De export is een download op het toestel zelf, dus geen netwerk (#4).
+
+**Les voor B-world:** `SessionLog` + `toCsv` zijn los overneembaar. In B-world zou je de
+meetgegevens eerder naar de B-world-opslag schrijven, maar het formaat kan hetzelfde blijven.

@@ -8,6 +8,8 @@ import type { BodyCalibration } from '../vision/types';
 import { BandSetup } from './BandSetup';
 import { Calibrate } from './Calibrate';
 import { CameraCheck } from './CameraCheck';
+import { DataScreen } from './DataScreen';
+import { getLog, logResult } from './logStore';
 import { DebugBar } from './DebugBar';
 import { ProfileEditor } from './ProfileEditor';
 import { ProfileSelect } from './ProfileSelect';
@@ -43,7 +45,8 @@ type Screen =
   | { name: 'map' }
   | { name: 'stage'; id: StageId; from: 'map' | 'picker' }
   | { name: 'warmup'; next: StageId }
-  | { name: 'rest'; ms: number; next: string | null };
+  | { name: 'rest'; ms: number; next: string | null }
+  | { name: 'data' };
 
 const params = new URLSearchParams(window.location.search);
 /** Testen: ?snel=1 maakt alle etappes (en rustpauzes) 4× korter. */
@@ -96,8 +99,14 @@ export function App() {
     else setScreen({ name: 'stage', id, from: 'map' });
   };
 
+  /** Losse etappes (begeleider): ook gelogd, onder een vaste testnaam. */
+  const recordTest = (r: StageResult) => {
+    if (!demo) logResult('test', 'losse etappe', r);
+  };
+
   const record = (r: StageResult) => {
     if (!profileId || demo) return;
+    logResult(profileId, getProfiles().get(profileId)?.name ?? '?', r);
     const res = getProfiles().record(profileId, r);
     const parts: string[] = [];
     if (res.unlockedStage) parts.push(`Nieuwe etappe open: ${stageInfo(res.unlockedStage).name}!`);
@@ -137,6 +146,9 @@ export function App() {
               </button>
               <button className="btn secondary small" onClick={() => setScreen(calibration || demo ? { name: 'stages' } : { name: 'calibrate', then: 'stages' })}>
                 Losse etappes
+              </button>
+              <button className="btn secondary small" onClick={() => setScreen({ name: 'data' })}>
+                Meetgegevens
               </button>
             </div>
             <label className="row center" style={{ gap: 6 }}>
@@ -221,7 +233,8 @@ export function App() {
           look={screen.from === 'map' && profile ? profile.look : DEFAULT_LOOK}
           durationScale={scale}
           demo={demo}
-          onResult={screen.from === 'map' ? record : undefined}
+          onResult={screen.from === 'map' ? record : recordTest}
+          onRate={demo ? undefined : (rating) => getLog().rateLast(screen.from === 'map' && profileId ? profileId : 'test', rating)}
           onExit={(r) => {
             if (screen.from === 'picker') return setScreen({ name: 'stages' });
             if (!r) return setScreen({ name: 'map' });
@@ -231,6 +244,7 @@ export function App() {
           }}
         />
       )}
+      {screen.name === 'data' && <DataScreen onBack={home} />}
       {screen.name === 'rest' && <RestScreen ms={screen.ms} next={screen.next} onDone={() => setScreen({ name: 'map' })} />}
       <DebugBar />
     </>

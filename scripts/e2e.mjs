@@ -73,7 +73,8 @@ try {
     if (u.protocol === 'data:' || u.protocol === 'blob:') return;
     if (!['localhost', '127.0.0.1'].includes(u.hostname)) external.push(r.url());
     // Eigen statische bestanden (lettertypes die pas bij gebruik laden) mogen; al de rest niet.
-    else if (loaded && !/\/(sw\.js|icon\.svg|manifest\.webmanifest)$/.test(u.pathname) && !u.pathname.startsWith('/assets/')) lateRequests.push(r.url());
+    // Paginanavigatie (herladen door de test zelf) is geen verbinding van de app.
+    else if (loaded && !r.isNavigationRequest() && !/\/(sw\.js|icon\.svg|manifest\.webmanifest)$/.test(u.pathname) && !u.pathname.startsWith('/assets/')) lateRequests.push(r.url());
   });
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(m.text());

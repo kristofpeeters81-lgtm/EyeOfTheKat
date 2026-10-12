@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createStage, stageInfo } from '../game/catalog';
 import { DemoBot } from '../game/demo';
+import type { Rating } from '../game/sessionLog';
 import type { GameInput, HudInfo, Stage, StageEvent, StageId, StageResult } from '../game/types';
 import { fitCanvas, startLoop } from '../render/canvas';
 import { StageRenderer } from '../render/stages';
@@ -31,9 +32,11 @@ export interface StageScreenProps {
   onResult?: (result: StageResult) => void;
   /** Geen resultaatscherm (opwarming): meteen `onExit` na afloop. */
   skipResult?: boolean;
+  /** Evaluatie op het resultaatscherm (#28). */
+  onRate?: (r: { fun?: Rating; effort?: Rating }) => void;
 }
 
-export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, onExit, onNext, onResult, skipResult }: StageScreenProps) {
+export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, onExit, onNext, onResult, skipResult, onRate }: StageScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<Stage | null>(null);
   const [hud, setHud] = useState<HudInfo | null>(null);
@@ -133,6 +136,7 @@ export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, 
         onRetry={() => setAttempt((a) => a + 1)}
         onExit={() => onExit(result)}
         onNext={onNext ? () => onNext(result) : undefined}
+        onRate={onRate}
       />
     );
   }

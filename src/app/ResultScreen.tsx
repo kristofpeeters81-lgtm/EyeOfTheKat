@@ -1,8 +1,27 @@
+import { useState } from 'react';
+import type { Rating } from '../game/sessionLog';
 import type { StageResult } from '../game/types';
 import { Spirit } from './Spirit';
 
 /** Resultaat van een etappe (#25, #28): sterren, score en de metingen. */
-export function ResultScreen({ result, name, onRetry, onExit, onNext }: { result: StageResult; name: string; onRetry: () => void; onExit: () => void; onNext?: () => void }) {
+export function ResultScreen({
+  result,
+  name,
+  onRetry,
+  onExit,
+  onNext,
+  onRate,
+}: {
+  result: StageResult;
+  name: string;
+  onRetry: () => void;
+  onExit: () => void;
+  onNext?: () => void;
+  /** Korte evaluatie door het kind (#28): hoe leuk en hoe zwaar (1..3). */
+  onRate?: (r: { fun?: Rating; effort?: Rating }) => void;
+}) {
+  const [fun, setFun] = useState<Rating | null>(null);
+  const [effort, setEffort] = useState<Rating | null>(null);
   const r = result;
   const sec = (ms: number) => `${Math.round(ms / 1000)} s`;
   const high = r.activeMs > 0 ? Math.round((r.highZoneMs / r.activeMs) * 100) : 0;
@@ -51,6 +70,41 @@ export function ResultScreen({ result, name, onRetry, onExit, onNext }: { result
           </div>
         )}
       </div>
+      {onRate && (
+        <div className="rating panel">
+          <div className="row center">
+            <span>Hoe leuk?</span>
+            {(['🙁', '🙂', '🤩'] as const).map((emo, i) => (
+              <button
+                key={emo}
+                className={`rate-btn${fun === i + 1 ? ' on' : ''}`}
+                aria-label={['niet zo leuk', 'oké', 'super leuk'][i]}
+                onClick={() => {
+                  setFun((i + 1) as Rating);
+                  onRate({ fun: (i + 1) as Rating });
+                }}
+              >
+                {emo}
+              </button>
+            ))}
+          </div>
+          <div className="row center">
+            <span>Hoe zwaar?</span>
+            {(['makkelijk', 'goed', 'zwaar'] as const).map((label, i) => (
+              <button
+                key={label}
+                className={`btn small${effort === i + 1 ? '' : ' secondary'}`}
+                onClick={() => {
+                  setEffort((i + 1) as Rating);
+                  onRate({ effort: (i + 1) as Rating });
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="row center">
         <button className="btn secondary" onClick={onRetry}>
           Opnieuw

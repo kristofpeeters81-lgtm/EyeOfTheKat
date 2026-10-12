@@ -16,7 +16,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 - ✅ Voorstellen van Claude vastgelegd als `voorlopig`: #41–#48
 - ✅ Documentatiestructuur opgezet
 - 🔨 Bouwen volgens de blokken hieronder (#49)
-- 🧪 Blok 1–10 gebouwd (alle 9 etappes, profielen, kaart, opwarming, rust) en automatisch getest (unit + e2e), live op https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/
+- 🧪 Blok 1–11 gebouwd (alle 9 etappes, profielen, kaart, opwarming, rust, meetgegevens + export) en automatisch getest (unit + e2e), live op https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/
 
 ## Bouwblokken
 
@@ -32,7 +32,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 | 8 | **Etappes A**: Duck Beams, Log Roll, Frog Leap, Stone Hop | Elke etappe spelen | 🧪 |
 | 9 | **Etappes B**: Shadow Wall, Shadow Strike, Wall Climb, The Eye (finale) | Elke etappe spelen, ook in de bandjes-modus | 🧪 |
 | 10 | **Spelverloop**: profielen (#19), held kiezen (#24), wereldkaart (#42), opwarming en rust (#47), ontgrendelen, scorebord | Een volledige sessie met 2 kinderen om de beurt | 🧪 |
-| 11 | **Opslag en extra's**: export CSV/JSON (#29), korte evaluatie na de sessie (#28), iOS-voorzieningen (ongetest, #22) | Export openen in Excel | ⏳ |
+| 11 | **Opslag en extra's**: export CSV/JSON (#29), korte evaluatie na de sessie (#28), iOS-voorzieningen (ongetest, #22) | Export openen in Excel | 🧪 |
 | 12 | **Herbouwgids B-world** (#14) afwerken + eindevaluatie van de testdoelen (#28) | Gids nalezen, go/no-go voor B-world | ⏳ |
 
 ## Open punten
