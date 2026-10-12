@@ -62,3 +62,5 @@ nieuw nummer; de oude krijgt status `vervangen door #x` en blijft staan.
 | 49 | 2026-10-11 | Kristof gaf groen licht om zonder tussentijdse goedkeuring door te bouwen ("verras me"); stijl en voorstellen blijven voorlopig tot hij ze bekijkt | beslist |
 | 50 | 2026-10-11 | Testfilmpjes: synthetisch filmpje (getekende kamer + figuur, `npm run testvideo`) vervangt de gratis Commons-filmpjes uit #32 | voorlopig |
 | 51 | 2026-10-11 | Stijl "Night Summit": nachtelijke bergen, ninja's als donker silhouet met lichtrand in de accentkleur; helden Kage, Riku, Mei, Neko | voorlopig |
+| 52 | 2026-10-12 | Demomodus: een bot speelt de etappes zonder camera (`?demo=1` of vinkje bij de etappes), om te bekijken en voor screenshots | voorlopig |
+| 53 | 2026-10-12 | Aankomende obstakels zijn altijd ±2,3 s op voorhand zichtbaar (snelheid volgt de schermbreedte) | voorlopig |

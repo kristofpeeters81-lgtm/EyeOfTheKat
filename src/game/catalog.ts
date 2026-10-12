@@ -1,4 +1,8 @@
 import { BridgeSprint } from './stages/bridgeSprint';
+import { DuckBeams } from './stages/duckBeams';
+import { FrogLeap } from './stages/frogLeap';
+import { LogRoll } from './stages/logRoll';
+import { StoneHop } from './stages/stoneHop';
 import type { Stage, StageId, StageSettings } from './types';
 
 /**
@@ -23,10 +27,10 @@ export interface StageInfo {
 
 export const STAGES: StageInfo[] = [
   { id: 'bridge-sprint', name: 'Bridge Sprint', dutch: 'Sprintbrug', blurb: 'De hangbrug stort in: sprint ter plaatse!', type: 'cardio', move: 'Lopen ter plaatse, knieën hoog', restAfterMs: 45000, create: (s) => new BridgeSprint(s) },
-  { id: 'duck-beams', name: 'Duck Beams', dutch: 'Duikbalken', blurb: 'Hurk onder de zwaaiende balken door.', type: 'kracht', move: 'Hurken', restAfterMs: 30000 },
-  { id: 'log-roll', name: 'Log Roll', dutch: 'Rollende stammen', blurb: 'Spring over de rollende boomstammen.', type: 'cardio', move: 'Springen', restAfterMs: 30000 },
-  { id: 'frog-leap', name: 'Frog Leap', dutch: 'Kikkersprongen', blurb: 'Diep hurken en omhoog springen naar het volgende platform.', type: 'kracht', move: 'Hurken + springen', restAfterMs: 30000 },
-  { id: 'stone-hop', name: 'Stone Hop', dutch: 'Springstenen', blurb: 'Hop links en rechts over de stenen in de rivier.', type: 'cardio', move: 'Zijwaarts springen', restAfterMs: 30000 },
+  { id: 'duck-beams', name: 'Duck Beams', dutch: 'Duikbalken', blurb: 'Hurk onder de zwaaiende balken door.', type: 'kracht', move: 'Hurken', restAfterMs: 30000, create: (s) => new DuckBeams(s) },
+  { id: 'log-roll', name: 'Log Roll', dutch: 'Rollende stammen', blurb: 'Spring over de rollende boomstammen.', type: 'cardio', move: 'Springen', restAfterMs: 30000, create: (s) => new LogRoll(s) },
+  { id: 'frog-leap', name: 'Frog Leap', dutch: 'Kikkersprongen', blurb: 'Diep hurken en omhoog springen naar het volgende platform.', type: 'kracht', move: 'Hurken + springen', restAfterMs: 30000, create: (s) => new FrogLeap(s) },
+  { id: 'stone-hop', name: 'Stone Hop', dutch: 'Springstenen', blurb: 'Hop links en rechts over de stenen in de rivier.', type: 'cardio', move: 'Zijwaarts springen', restAfterMs: 30000, create: (s) => new StoneHop(s) },
   { id: 'shadow-wall', name: 'Shadow Wall', dutch: 'Schaduwmuur', blurb: 'Pas in het gat van de naderende muur en hou vast.', type: 'kracht', move: 'Houding vasthouden', restAfterMs: 30000 },
   { id: 'shadow-strike', name: 'Shadow Strike', dutch: 'Ninja-slagen', blurb: 'Sla de schaduwdoelen links, rechts en boven.', type: 'cardio', move: 'Slaan', restAfterMs: 45000 },
   { id: 'wall-climb', name: 'Wall Climb', dutch: 'Muurklim', blurb: 'Klim de muur op: om beurt je armen omhoog.', type: 'kracht', move: 'Afwisselend reiken + knie', restAfterMs: 30000 },

@@ -27,12 +27,15 @@ type Screen =
 
 /** Testen: ?snel=1 in de link maakt alle etappes 4× korter. */
 const QUICK_DEFAULT = new URLSearchParams(window.location.search).has('snel');
+/** ?demo=1: de etappes worden gespeeld door een bot, zonder camera. */
+const DEMO_DEFAULT = new URLSearchParams(window.location.search).has('demo');
 
 export function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   const [calibration, setCalibration] = useState<BodyCalibration | null>(null);
   const [age, setAge] = useState(10);
   const [quick, setQuick] = useState(QUICK_DEFAULT);
+  const [demo, setDemo] = useState(DEMO_DEFAULT);
   const home = () => setScreen({ name: 'home' });
 
   // Geluid mag pas na een tik van de gebruiker (browserregel): bij de eerste tik ontgrendelen.
@@ -56,7 +59,7 @@ export function App() {
           </h1>
           <p className="muted">Ninja-parcours met je lichaam als controller. Zonder AI, niets verlaat dit toestel.</p>
           <div className="row center">
-            <button className="btn" onClick={() => setScreen(calibration ? { name: 'stages' } : { name: 'calibrate', then: 'stages' })}>
+            <button className="btn" onClick={() => setScreen(calibration || demo ? { name: 'stages' } : { name: 'calibrate', then: 'stages' })}>
               Spelen
             </button>
             <button className="btn secondary" onClick={() => setScreen(calibration ? { name: 'lab' } : { name: 'calibrate', then: 'lab' })}>
@@ -93,10 +96,10 @@ export function App() {
       {screen.name === 'style' && <StylePreview onBack={home} />}
       {screen.name === 'bands' && <BandSetup say={sayHigh} onBack={() => setScreen({ name: 'lab' })} onDone={() => setScreen({ name: 'lab' })} />}
       {screen.name === 'stages' && (
-        <StagePicker age={age} quick={quick} onAge={setAge} onQuick={setQuick} onBack={home} onPlay={(id) => setScreen({ name: 'stage', id })} />
+        <StagePicker age={age} quick={quick} demo={demo} onDemo={setDemo} onAge={setAge} onQuick={setQuick} onBack={home} onPlay={(id) => setScreen({ name: 'stage', id })} />
       )}
       {screen.name === 'stage' && (
-        <StageScreen stageId={screen.id} age={age} look={DEFAULT_LOOK} durationScale={quick ? 0.25 : 1} onExit={() => setScreen({ name: 'stages' })} />
+        <StageScreen stageId={screen.id} age={age} look={DEFAULT_LOOK} durationScale={quick ? 0.25 : 1} demo={demo} onExit={() => setScreen({ name: 'stages' })} />
       )}
       <DebugBar />
     </>

@@ -16,7 +16,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 - ✅ Voorstellen van Claude vastgelegd als `voorlopig`: #41–#48
 - ✅ Documentatiestructuur opgezet
 - 🔨 Bouwen volgens de blokken hieronder (#49)
-- 🧪 Blok 1–7 gebouwd en automatisch getest (unit + e2e), live op https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/
+- 🧪 Blok 1–8 gebouwd en automatisch getest (unit + e2e), live op https://kristofpeeters81-lgtm.github.io/EyeOfTheKat/
 
 ## Bouwblokken
 
@@ -29,7 +29,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 | 5 | **Stijl, held en wereld** (#23, #24, #35, #38): stijlvoorbeeld, 4 helden met kleurkeuze, de Geest, de berg met het Oog | Stijl bekijken: goedkeuren of bijsturen | 🧪 |
 | 6 | **Etappemotor + eerste etappe**: Bridge Sprint end-to-end, met vangnetten (#31), sterren (#45) en resultaatscherm | Bridge Sprint volledig spelen | 🧪 |
 | 7 | **Geluid** (#20): effecten, muziek die meegaat met de Ninja Power, stem van de Geest | Beluisteren op het toestel | 🧪 |
-| 8 | **Etappes A**: Duck Beams, Log Roll, Frog Leap, Stone Hop | Elke etappe spelen | ⏳ |
+| 8 | **Etappes A**: Duck Beams, Log Roll, Frog Leap, Stone Hop | Elke etappe spelen | 🧪 |
 | 9 | **Etappes B**: Shadow Wall, Shadow Strike, Wall Climb, The Eye (finale) | Elke etappe spelen, ook in de bandjes-modus | ⏳ |
 | 10 | **Spelverloop**: profielen (#19), held kiezen (#24), wereldkaart (#42), opwarming en rust (#47), ontgrendelen, scorebord | Een volledige sessie met 2 kinderen om de beurt | ⏳ |
 | 11 | **Opslag en extra's**: export CSV/JSON (#29), korte evaluatie na de sessie (#28), iOS-voorzieningen (ongetest, #22) | Export openen in Excel | ⏳ |
@@ -37,7 +37,7 @@ afgewerkt. Een blok is pas af als `docs/BOUWLOG.md` en `docs/HERBOUW-BWORLD.md` 
 
 ## Open punten
 
-- Alle `voorlopige` beslissingen (#41–#48, #50, #51) en de stijl (blok 5) moeten nog door Kristof bekeken worden.
+- Alle `voorlopige` beslissingen (#41–#48, #50–#53) en de stijl (blok 5) moeten nog door Kristof bekeken worden.
 - Testmomenten op het toestel van alle blokken (#49).
 
 ## Risico's

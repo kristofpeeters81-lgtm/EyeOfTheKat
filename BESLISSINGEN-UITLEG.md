@@ -780,3 +780,28 @@ volledig procedureel te tekenen: geen afbeeldingen, en elke kleur aanpasbaar (#2
 
 **Gevolgen:** Te bekijken via **Stijl** op het startscherm. Kleuren staan centraal in
 `src/render/theme.ts` (wereld) en `src/app/styles.css` (UI). Bijsturen = enkel daar.
+
+## 52. Demomodus *(voorlopig)*
+
+**Beslissing (voorstel):** Een "bot" (`src/game/demo.ts`) kan elke etappe spelen zonder camera. Hij
+geeft dezelfde invoer als de camera (`GameInput`): springen net voor een stam, laag bij een balk,
+kikkersprongen om de 2,2 s, en hoppen naar de oplichtende steen. Aan te zetten met het vinkje "demo
+(zonder camera)" bij de etappes, of met `?demo=1` in de link.
+
+**Waarom:** Kristof (of een begeleider, of ouders) kan alle etappes bekijken zonder ruimte of
+kalibratie. De automatische tests maken er screenshots mee van elke etappe in enkele seconden, wat
+nodig is voor de visuele controle zonder toestel (#49).
+
+**Gevolgen:** De demo telt niet als echte sessie. In blok 11 komt ze niet in de meetgegevens.
+
+## 53. Obstakels ±2,3 s op voorhand zichtbaar *(voorlopig)*
+
+**Beslissing (voorstel):** Bij Log Roll en Duck Beams komt elk obstakel rechts in beeld precies 2,3 s
+voor het bij de held is. De snelheid op het scherm volgt dus de schermbreedte, en niet een vaste
+snelheid in meter per seconde.
+
+**Waarom:** In de eerste versie was een balk op een liggend scherm maar ±1,1 s zichtbaar, en op een
+smal staand scherm nog korter. Dat is te kort voor een 6-jarige om te zien, te begrijpen en te
+hurken. Met een vaste reactietijd is het op elk toestel even eerlijk (#11).
+
+**Gevolgen:** Na de toesteltest eventueel bijstellen (`LEAD_MS` in `src/render/stages/setA.ts`).

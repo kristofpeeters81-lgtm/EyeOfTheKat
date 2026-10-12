@@ -54,6 +54,35 @@ export const SCENARIOS = {
     check(stars >= 1, `minstens 1 ster (${stars})`);
   },
 
+  /**
+   * Demomodus: elke gebouwde etappe even door de bot laten spelen en een screenshot maken.
+   * Gebruik: E2E_SCENARIO=demo E2E_QUERY="?demo=1&snel=1" npm run e2e
+   * Optioneel E2E_STAGES="Log Roll,Stone Hop" om er enkele te kiezen.
+   */
+  async demo({ page, clickText, sleep, check, OUT }) {
+    await clickText(page, 'Spelen');
+    await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 8000 });
+    const names = await page.evaluate(() => [...document.querySelectorAll('.stage-card:not([disabled]) b')].map((b) => b.textContent ?? ''));
+    const only = process.env.E2E_STAGES?.split(',').map((x) => x.trim());
+    for (const name of names) {
+      if (only && !only.includes(name)) continue;
+      await clickText(page, name);
+      await sleep(10000);
+      const file = `demo-${name.toLowerCase().replace(/[^a-z]+/g, '-')}.png`;
+      await page.screenshot({ path: path.join(OUT, file) });
+      const hud = await page.evaluate(() => document.querySelector('.hud-instruction')?.textContent ?? '');
+      check(hud.length > 0, `${name}: speelt (${hud})`);
+      if (process.env.E2E_PORTRAIT) {
+        await page.setViewport({ width: 600, height: 900 });
+        await sleep(1500);
+        await page.screenshot({ path: path.join(OUT, file.replace('.png', '-staand.png')) });
+        await page.setViewport({ width: 1280, height: 800 });
+      }
+      await clickText(page, 'Stop');
+      await page.waitForFunction(() => document.querySelector('h2')?.textContent?.includes('Etappes'), { timeout: 5000 });
+    }
+  },
+
   /** Blok 5: stijlvoorbeeld (screenshots om te beoordelen). */
   async stijl({ page, clickText, sleep, OUT }) {
     await clickText(page, 'Stijl');

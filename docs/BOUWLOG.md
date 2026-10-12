@@ -423,3 +423,49 @@ afgewerkt. Halve stukken zijn bewust niet gepusht, omdat een push naar main mete
 
 **Les voor B-world:** de geluidsmotor is nu in twee apps gebruikt. In B-world kan hij één gedeelde
 module worden, met per game enkel andere muziek (`music.ts`) en een andere effectenlijst.
+
+## Blok 8 — Etappes A: Duck Beams, Log Roll, Frog Leap, Stone Hop  (2026-10-12 → wacht op test door Kristof)
+
+**Doel:** vier etappes erbij, zodat cardio en kracht elkaar afwisselen (#9, #15, #16).
+
+**Gebouwd:**
+- **`SetStage`** (`src/game/setStage.ts`): etappes in reeksen met 20 s rust ertussen, een teller per
+  reeks, en zinnen van de Geest bij het begin van elke reeks en de rust.
+- **`TimedObstacleStage`** (`src/game/stages/timed.ts`): obstakels die op een vast moment
+  aankomen. De tijd ertussen gaat binnen een reeks van "start" naar "eind" (steeds sneller) en
+  wordt gedeeld door de tempofactor (jonge kinderen = meer tijd). Geteld wordt in een venster rond
+  de aankomst. Te laat = struikelen + `auto`. De begeleider-knop telt het eerstvolgende obstakel
+  (binnen 1,5 s) als `manual`.
+- **Log Roll:** 3 golven × 8 stammen (5 voor 6-jarigen), tussentijd 2,4 → 1,6 s. Een sprong telt
+  van 0,65 s vóór tot 0,2 s na de aankomst, of als je op dat moment in de lucht bent.
+- **Duck Beams:** 3 reeksen × 8 balken, tussentijd 2,6 → 2,1 s. Je moet laag zijn van 0,35 s
+  vóór tot 0,3 s na de aankomst. Zo moet je tussen twee balken weer recht komen: echte squats.
+- **Frog Leap:** in eigen tempo, 3 reeksen × 6 kikkersprongen (detector uit blok 3: sprong binnen
+  1,3 s na het laagste punt van een hurk). De held springt van pilaar naar pilaar. Na 8 s zonder
+  sprong springt hij toch (`auto`).
+- **Stone Hop:** in vooraanzicht, 3 golven × 10 stenen. Links en rechts lichten om beurt op (met
+  een pijl). Telt zodra de zijbaan van het kind die kant is. De held volgt live de zijbaan. Na 5 s
+  hopt hij toch (`auto`).
+- **Tekeningen** (`src/render/stages/setA.ts`): rollende stammen met jaarringen, balken aan
+  touwen met rood-witte strepen die zachtjes zwaaien, stenen pilaren boven golvend water (het
+  volgende platform gloeit), en een rivier in perspectief met drie stenen (de doelsteen pulseert in
+  jade). Een fonkeling bij een gehaald obstakel.
+- **Demomodus** (#52) en een vaste vooraankondiging van obstakels (#53).
+
+**Bestanden:** `src/game/{setStage,demo}.ts`, `src/game/stages/{timed,logRoll,duckBeams,frogLeap,stoneHop}.ts`
+(+ `stagesA.test.ts`), `src/render/stages/setA.ts`, aanpassingen in `catalog.ts`,
+`render/stages/index.ts`, `StageScreen.tsx`, `StagePicker.tsx`, `App.tsx`,
+`scripts/e2e-scenarios.mjs` (scenario `demo`).
+
+**Getest:**
+- 8 unit tests: Log Roll perfect (24/24) en zonder springen (24 auto, 1 ster, struikelgeluid),
+  6-jarigen (5 per golf, meer tijd ertussen). Duck Beams perfect, en de begeleider-knop. Frog Leap
+  18/18 met 18 platformen, en het vangnet na 8 s. Stone Hop 30/30, om beurt links/rechts.
+- E2E-scenario `demo` (headless Chrome, bot, `?demo=1&snel=1`): alle vier spelen, met
+  screenshots liggend en staand en zonder consolefouten. Daarop gezien en verbeterd: een balk was
+  maar ±1,1 s zichtbaar (#53).
+- **Op het toestel: nog niet getest.** Kristof: zijn de vensters eerlijk (stammen, balken)?
+  Telt Frog Leap jouw kikkersprongen? Is Stone Hop ook staand haalbaar zonder uit beeld te stappen?
+
+**Les voor B-world:** `SetStage` en `TimedObstacleStage` maken een nieuwe etappe klein (± 60 regels
+spellogica). De bot in `demo.ts` is handig voor elke game: als "attract mode" en voor tests.

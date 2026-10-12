@@ -93,6 +93,8 @@ stage.hud(); stage.hero(); stage.result();
 stage.manualPass();                       // begeleider-knop (#31)
 ```
 `GameInput` = VisionResult + MoveTracker-uitvoer (zie `src/app/StageScreen.tsx`).
+Basisklassen: `setStage.ts` (reeksen + rust) en `stages/timed.ts` (getimede obstakels). Een bot
+(`demo.ts`) speelt elke etappe zonder camera, voor tests en een demo.
 **Opnieuw bouwen in B-world-stijl:** `src/app/StageScreen.tsx` (HUD) en `ResultScreen.tsx`.
 **Tekeningen:** `src/render/stages/*.ts` (per etappe), te vervangen of over te nemen.
 

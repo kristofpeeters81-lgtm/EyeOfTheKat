@@ -7,6 +7,8 @@ import type { StageId } from '../game/types';
 export function StagePicker({
   age,
   quick,
+  demo,
+  onDemo,
   onAge,
   onQuick,
   onPlay,
@@ -14,6 +16,8 @@ export function StagePicker({
 }: {
   age: number;
   quick: boolean;
+  demo: boolean;
+  onDemo: (d: boolean) => void;
   onAge: (a: number) => void;
   onQuick: (q: boolean) => void;
   onPlay: (id: StageId) => void;
@@ -36,6 +40,9 @@ export function StagePicker({
         ))}
         <label className="row" style={{ gap: 6, marginLeft: 'auto' }}>
           <input type="checkbox" checked={quick} onChange={(e) => onQuick(e.target.checked)} /> korte etappes (test)
+        </label>
+        <label className="row" style={{ gap: 6 }}>
+          <input type="checkbox" checked={demo} onChange={(e) => onDemo(e.target.checked)} /> demo (zonder camera)
         </label>
       </div>
       <div className="stage-grid">

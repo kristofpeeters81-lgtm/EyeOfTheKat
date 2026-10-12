@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createStage, stageInfo } from '../game/catalog';
+import { DemoBot } from '../game/demo';
 import type { GameInput, HudInfo, Stage, StageEvent, StageId, StageResult } from '../game/types';
 import { fitCanvas, startLoop } from '../render/canvas';
 import { StageRenderer } from '../render/stages';
@@ -21,12 +22,14 @@ export interface StageScreenProps {
   age: number;
   look: HeroLook;
   durationScale?: number;
+  /** Demomodus: een bot speelt, zonder camera. */
+  demo?: boolean;
   onEvent?: (e: StageEvent) => void;
   onExit: (result: StageResult | null) => void;
   onNext?: (result: StageResult) => void;
 }
 
-export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit, onNext }: StageScreenProps) {
+export function StageScreen({ stageId, age, look, durationScale, demo, onEvent, onExit, onNext }: StageScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<Stage | null>(null);
   const [hud, setHud] = useState<HudInfo | null>(null);
@@ -47,7 +50,22 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
     const renderer = new StageRenderer(stageId, look);
     const vision = getVision();
     let lastPower = { p: 0, zone: 0 };
-    vision.setListener((r, _frame, moves) => {
+    const handle = (input: GameInput) => {
+      const events = stage.update(input);
+      audio.setLevel(input.zone);
+      for (const e of events) {
+        handleStageEvent(e);
+        eventRef.current?.(e);
+        if (e.type === 'say') setSubtitle(e.text);
+        if (e.type === 'done') window.setTimeout(() => setResult(stage.result()), 1800);
+      }
+      lastPower = { p: input.power, zone: input.zone };
+    };
+    let demoTimer = 0;
+    if (demo) {
+      const bot = new DemoBot();
+      demoTimer = window.setInterval(() => handle(bot.input(stage, 33)), 33);
+    } else vision.setListener((r, _frame, moves) => {
       const input: GameInput = {
         t: r.t,
         dt: r.dt,
@@ -60,17 +78,9 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
         pose: r.pose,
         markerMode: vision.markerMode,
       };
-      const events = stage.update(input);
-      audio.setLevel(r.zone);
-      for (const e of events) {
-        handleStageEvent(e);
-        eventRef.current?.(e);
-        if (e.type === 'say') setSubtitle(e.text);
-        if (e.type === 'done') window.setTimeout(() => setResult(stage.result()), 1800);
-      }
-      lastPower = { p: r.power, zone: r.zone };
+      handle(input);
     });
-    void vision.start();
+    if (!demo) void vision.start();
     const stopLoop = startLoop((t, dt) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -85,10 +95,11 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
     return () => {
       stopLoop();
       window.clearInterval(id);
+      window.clearInterval(demoTimer);
       vision.setListener(null);
       audio.stopAll();
     };
-  }, [stageId, age, look, durationScale, attempt]);
+  }, [stageId, age, look, durationScale, demo, attempt]);
 
   if (!stageRef.current && !result) {
     return (
