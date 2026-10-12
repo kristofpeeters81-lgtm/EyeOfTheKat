@@ -8,6 +8,8 @@ import { getVision } from '../runtime/vision';
 import { ZONE_COLORS } from './DebugBar';
 import { ResultScreen } from './ResultScreen';
 import { Spirit } from './Spirit';
+import { audio } from '../audio/director';
+import { handleStageEvent, useStageAudioCleanup } from './useStageAudio';
 
 /**
  * Een etappe spelen: canvas met de wereld en de held, HUD bovenaan, ondertitels van de Geest,
@@ -35,6 +37,7 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
   const eventRef = useRef(onEvent);
   eventRef.current = onEvent;
   const info = stageInfo(stageId);
+  useStageAudioCleanup();
 
   useEffect(() => {
     const stage = createStage(stageId, { age, durationScale });
@@ -58,7 +61,9 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
         markerMode: vision.markerMode,
       };
       const events = stage.update(input);
+      audio.setLevel(r.zone);
       for (const e of events) {
+        handleStageEvent(e);
         eventRef.current?.(e);
         if (e.type === 'say') setSubtitle(e.text);
         if (e.type === 'done') window.setTimeout(() => setResult(stage.result()), 1800);
@@ -81,6 +86,7 @@ export function StageScreen({ stageId, age, look, durationScale, onEvent, onExit
       stopLoop();
       window.clearInterval(id);
       vision.setListener(null);
+      audio.stopAll();
     };
   }, [stageId, age, look, durationScale, attempt]);
 

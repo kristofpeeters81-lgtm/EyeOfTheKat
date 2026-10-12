@@ -5,6 +5,7 @@ import { CalibrationFlow, type FlowView } from '../runtime/calibrationFlow';
 import { getVision } from '../runtime/vision';
 import type { BodyCalibration } from '../vision/types';
 import { Spirit } from './Spirit';
+import { audio } from '../audio/director';
 
 /**
  * Kalibratiescherm (#30): toestel klaarzetten → opzij stappen → lege kamer leren → terugkomen in de
@@ -41,9 +42,15 @@ export function Calibrate({ bodyOnly, onDone, onBack, say }: CalibrateProps) {
     const flow = new CalibrationFlow(vision.engine, (s) => say?.(s));
     flowRef.current = flow;
     let finished = false;
+    let lastCount: number | null = null;
     vision.setListener((r, frame) => {
       flow.update(r, r.t);
       const v = flow.view();
+      if (v.count !== lastCount) {
+        if (v.count !== null && v.count > 0) audio.sfx('tick');
+        lastCount = v.count;
+      }
+      if (v.step === 'done' && !finished) audio.sfx('success');
       const c = canvasRef.current;
       if (c) {
         drawPreview(c, {

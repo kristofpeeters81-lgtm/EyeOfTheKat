@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { audio } from '../audio/director';
 import type { StageId } from '../game/types';
 import { DEFAULT_LOOK } from '../render/theme';
 import { BandSetup } from './BandSetup';
@@ -8,7 +9,10 @@ import { DebugBar } from './DebugBar';
 import { StagePicker } from './StagePicker';
 import { StageScreen } from './StageScreen';
 import { StylePreview } from './StylePreview';
+import { SoundSettings } from './SoundSettings';
+import { loadSoundPrefs } from './storage';
 import { Testlab } from './Testlab';
+import { sayHigh } from './useStageAudio';
 import type { BodyCalibration } from '../vision/types';
 
 type Screen =
@@ -30,6 +34,16 @@ export function App() {
   const [age, setAge] = useState(10);
   const [quick, setQuick] = useState(QUICK_DEFAULT);
   const home = () => setScreen({ name: 'home' });
+
+  // Geluid mag pas na een tik van de gebruiker (browserregel): bij de eerste tik ontgrendelen.
+  useEffect(() => {
+    const prefs = loadSoundPrefs();
+    audio.setSound(prefs.sound);
+    audio.setVoice(prefs.voice);
+    const unlock = () => audio.unlock();
+    window.addEventListener('pointerdown', unlock);
+    return () => window.removeEventListener('pointerdown', unlock);
+  }, []);
 
   return (
     <>
@@ -58,12 +72,14 @@ export function App() {
               Stijl
             </button>
           </div>
+          <SoundSettings />
           {calibration && <p className="muted">✓ Gekalibreerd: lichaam {calibration.height} px hoog.</p>}
         </div>
       )}
       {screen.name === 'camera' && <CameraCheck onBack={home} />}
       {screen.name === 'calibrate' && (
         <Calibrate
+          say={sayHigh}
           onBack={home}
           onDone={(c) => {
             setCalibration(c);
@@ -75,7 +91,7 @@ export function App() {
         <Testlab onBack={home} onRecalibrate={() => setScreen({ name: 'calibrate', then: 'lab' })} onBands={() => setScreen({ name: 'bands' })} />
       )}
       {screen.name === 'style' && <StylePreview onBack={home} />}
-      {screen.name === 'bands' && <BandSetup onBack={() => setScreen({ name: 'lab' })} onDone={() => setScreen({ name: 'lab' })} />}
+      {screen.name === 'bands' && <BandSetup say={sayHigh} onBack={() => setScreen({ name: 'lab' })} onDone={() => setScreen({ name: 'lab' })} />}
       {screen.name === 'stages' && (
         <StagePicker age={age} quick={quick} onAge={setAge} onQuick={setQuick} onBack={home} onPlay={(id) => setScreen({ name: 'stage', id })} />
       )}

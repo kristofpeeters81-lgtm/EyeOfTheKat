@@ -227,3 +227,9 @@ button {
 .stage-card span { font-size: 0.9rem; }
 .stage-card em { color: var(--muted); font-size: 0.8rem; }
 .stage-card:disabled { opacity: 0.5; cursor: default; }
+
+/* Geluidsinstellingen */
+.sound-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.sound-settings .toggle { font-family: var(--font-body); font-weight: 600; background: var(--panel); border: 2px solid var(--line); border-radius: 999px; padding: 8px 14px; }
+.sound-settings .toggle.on { border-color: var(--jade); box-shadow: 0 0 12px rgba(46, 230, 197, 0.35); }
+.sound-settings .hint-text { flex-basis: 100%; color: var(--muted); font-size: 0.85rem; text-align: center; }

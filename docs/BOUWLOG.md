@@ -378,3 +378,48 @@ B-world-stijl betekent enkel `drawHero`/`drawMountains` vervangen. Het skelet en
 **Les voor B-world:** een etappe is een klasse met `update(input) → events`, `hud()`, `hero()` en
 `result()`. Het scherm is een dunne laag. Nieuwe etappes erven van `StageBase` en schrijven enkel
 `step()`.
+
+## Blok 7 — Geluid  (2026-10-11 → 2026-10-12, wacht op beluisteren door Kristof)
+
+**Doel:** geluidseffecten, muziek die meegaat met de inspanning, en de stem van de Geest (#20, #38).
+
+**Gebouwd:**
+- De geluidsmotor is **overgenomen uit Idol Academy** (`src/audio/{synth,music,speech,director}.ts`)
+  en aangepast:
+  - **Muziek:** een eigen "ninja-beat" in d-klein (Dm–B♭–C–Am) met een taiko-ritme (trommel op
+    stap 0, 6, 8, 12) en een pentatonische melodie (d f g a c). Er komen lagen bij per Ninja
+    Power-zone: rust = taiko + bas, matig + handklap/shaker, hoog + akkoorden, piek + snelle shaker +
+    melodie. Het tempo gaat van 100 naar 130 BPM, met hoogstens 4 BPM per maat.
+  - **Effecten:** eigen namen (go, tick, hit, miss, stumble, step, success, land, whoosh, pause,
+    star, win), allemaal gesynthetiseerd, zonder geluidsbestanden.
+  - **Stem van de Geest:** enkel een lokale Nederlandse stem (Vlaams eerst). Online stemmen worden
+    genegeerd, want die sturen de tekst naar een server (#3). De stem is iets trager (0,95) en
+    lager (0,85) dan normaal. Zonder lokale stem staat alles enkel op het scherm.
+- **Koppeling** (`src/app/useStageAudio.ts`):
+  - de gebeurtenissen van een etappe worden geluid: `say` wordt de stem, `sfx` een effect, en de
+    fase actief/rust start de muziek;
+  - het niveau van de muziek volgt per camerabeeld de Ninja Power-zone;
+  - bij een pauze gaat de muziek zacht, net als terwijl de Geest spreekt;
+  - bij het verlaten van het scherm wordt het stil.
+- Kalibratie en bandjes: de Geest spreekt de aanwijzingen uit, met een tik bij het aftellen en
+  een succesgeluid als het klaar is.
+- Startscherm: knoppen "Muziek & geluid" en "Stem van de Geest" (onthouden op het toestel).
+  Het geluid wordt ontgrendeld bij de eerste tik (een browserregel).
+
+**Bestanden:** `src/audio/*` (+ `audio.test.ts`), `src/app/{useStageAudio.ts,SoundSettings.tsx,storage.ts}`,
+aanpassingen in `App.tsx`, `StageScreen.tsx` en `Calibrate.tsx`.
+
+**Getest:**
+- 11 unit tests (lagen per zone, taiko-ritme, akkoorden, melodie enkel pentatonisch, tempo,
+  stemkeuze: Vlaams > Nederlands, online stemmen geweigerd, `nl_BE`-schrijfwijze, dosering van
+  zinnen, uitspreekbare tekst).
+- E2E `bridge` opnieuw groen met geluid erbij (geen consolefouten). Headless Chrome heeft geen
+  stemmen, dus de stem zelf is niet automatisch getest.
+- **Op het toestel: nog niet beluisterd.** Kristof: klinkt de muziek goed, is de Geest
+  verstaanbaar, en is het niet te luid?
+
+**Problemen en oplossingen:** het werk werd onderbroken (Kristof zette de pc af) en de volgende dag
+afgewerkt. Halve stukken zijn bewust niet gepusht, omdat een push naar main meteen live gaat.
+
+**Les voor B-world:** de geluidsmotor is nu in twee apps gebruikt. In B-world kan hij één gedeelde
+module worden, met per game enkel andere muziek (`music.ts`) en een andere effectenlijst.

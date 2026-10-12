@@ -103,7 +103,13 @@ games vragen enkel een `HeroAction` op (bv. `'jump'`, `'strikeLeft'`). Wereld:
 `src/render/world.ts`. Kleuren: `src/render/theme.ts`.
 
 ## 6. Audio, veiligheid, opslag
-*(Latere blokken)*
+### 6.1 Audio *(blok 7, ingevuld)*
+**Letterlijk overnemen:** `src/audio/` (komt uit Idol Academy, dus in B-world best één gedeelde
+module). Enkel `music.ts` (noten/ritme) en de lijst effecten in `synth.ts` zijn per app anders.
+Koppeling met een etappe: `src/app/useStageAudio.ts` (`handleStageEvent`). Privacy: enkel lokale
+stemmen (`pickVoice`).
+
+### 6.2 Veiligheid en opslag *(latere blokken)*
 
 ## 7. Observaties naast Idol Academy
 *(Laatste blok)* Geen formeel vergelijkend rapport (#28), enkel korte observaties die helpen
